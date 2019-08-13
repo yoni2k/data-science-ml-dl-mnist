@@ -1,3 +1,2 @@
-,Step by step,Num epochs,Batch size,Hidden width,Validate accuracy,Train time,Average epoch time,Train accuracy
-0,True,1,10000,50,0.4269999861717224,5.291,5.291,0.2460000067949295
-1,False,1,10000,50,0.421999990940094,5.547,5.547,0.23100000619888306
+,Num epochs,Batch size,Hidden width,Accuracy Validate Last,Accuracy Validate Best,Train time,Average epoch time,Accuracy Train Last,Accuracy Train Best
+0,20,1000,50,0.9739999771118164,0.9760000109672546,134.711,6.736,0.9750000238418579,0.9750000238418579

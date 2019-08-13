@@ -33,8 +33,8 @@ from pprint import pprint
 """ Settings """
 FRACTION_VALIDATE = 0.1
 
-nums_epochs = [1]
-batch_sizes = [10000]
+nums_epochs = [20]
+batch_sizes = [1000]
 hidden_widths = [50]
 
 
@@ -70,7 +70,7 @@ def split_data(train_data, num_train_valid_examples):
     return train_data.take(num_validation_samples), train_data.skip(num_validation_samples)
 
 
-def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, in_dic):
+def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, batch_size):
     train_valid_data = mnist_dataset['train']
     test_data = mnist_dataset['test']
 
@@ -79,14 +79,14 @@ def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, in_
     test_data = test_data.map(scale_0_to_1)
 
     # Shuffle training data
-    train_valid_data = train_valid_data.shuffle(num_train_valid_examples)
-    test_data = test_data.shuffle(num_test_examples)
+    train_valid_data = train_valid_data.shuffle(num_train_valid_examples, seed=100)
+    test_data = test_data.shuffle(num_test_examples, seed=100)
 
     # Split training and validation data
     valid_data, train_data = split_data(train_valid_data, num_train_valid_examples)
 
     # Batch train data
-    train_data = train_data.batch(in_dic['Batch size'])
+    train_data = train_data.batch(batch_size)
     valid_data = valid_data.batch(num_train_valid_examples)  # giving a too big of a number = keep in one batch
     test_data = test_data.batch(num_test_examples)  #keep in one batch
 
@@ -109,30 +109,22 @@ def prepare_model(in_dic):
     return model
 
 
-def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic):
+def single_model(train_data, valid_inputs, valid_targets, in_dic):
     out_dic = {}
 
-    train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
-                                                                      num_test_examples, in_dic)
     model = prepare_model(in_dic)
 
     start = timer()
-
-    if in_dic['Step by step']:
-        for start_epoch in range(in_dic['Num epochs']):
-            print(f'start_epoch: {start_epoch}')
-            history = model.fit(train_data, initial_epoch=start_epoch+1, epochs=start_epoch+2,
-                                validation_data=(valid_inputs, valid_targets), verbose=2)
-    else:
-        history = model.fit(train_data, epochs=in_dic['Num epochs'],
-                            validation_data=(valid_inputs, valid_targets), verbose=2)
-
+    history = model.fit(train_data, epochs=in_dic['Num epochs'],
+                        validation_data=(valid_inputs, valid_targets), verbose=2)
     end = timer()
 
-    out_dic['Validate accuracy'] = history.history["val_accuracy"][0].round(3)
+    out_dic['Accuracy Validate Last'] = history.history["val_accuracy"][-1].round(4)
+    out_dic['Accuracy Validate Best'] = max(history.history['val_accuracy']).round(4)
     out_dic['Train time'] = round(end - start, 3)
-    out_dic['Average epoch time'] = round((end - start) / in_dic['Num epochs'], 3)
-    out_dic['Train accuracy'] = history.history["accuracy"][0].round(3)
+    out_dic['Average epoch time'] = round((end - start) / in_dic['Num epochs'], 4)
+    out_dic['Accuracy Train Last'] = history.history["accuracy"][-1].round(4)
+    out_dic['Accuracy Train Best'] = max(history.history["accuracy"]).round(4)
 
     return out_dic
 
@@ -141,19 +133,19 @@ def do_numerous_loops():
     results = []
     in_dic = {}
 
-    for step_by_step in [True, False]:
-        in_dic['Step by step'] = step_by_step
-        for num_epochs in nums_epochs:
-            in_dic['Num epochs'] = num_epochs
-            for batch_size in batch_sizes:
-                in_dic['Batch size'] = batch_size
-                for hidden_width in hidden_widths:
-                    in_dic['Hidden width'] = hidden_width
-                    out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
-                    result = in_dic.copy()
-                    result.update(out_dic)
-                    results.append(result)
-                    print(result)
+    for num_epochs in nums_epochs:
+        in_dic['Num epochs'] = num_epochs
+        for batch_size in batch_sizes:
+            in_dic['Batch size'] = batch_size
+            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
+                                                                              num_test_examples, batch_size)
+            for hidden_width in hidden_widths:
+                in_dic['Hidden width'] = hidden_width
+                out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+                result = in_dic.copy()
+                result.update(out_dic)
+                results.append(result)
+                print(result)
 
     pf = pd.DataFrame(results)
     print(f'Results:')
