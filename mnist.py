@@ -28,6 +28,7 @@ import tensorflow_datasets as tfds  # getting MNIST from there
 from timeit import default_timer as timer
 import numpy as np
 import pandas as pd
+from pprint import pprint
 
 """ Settings """
 FRACTION_VALIDATE = 0.1
@@ -36,15 +37,17 @@ nums_epochs = [1]
 batch_sizes = [10000]
 hidden_widths = [50]
 
+
 def acquire_data():
     mnist_dataset, mnist_info = tfds.load(name='mnist', with_info=True, as_supervised=True)
 
     print(f'Name: {mnist_info.full_name}')
     print(f'Description: {mnist_info.description}')
     print(f'Size in bytes: {mnist_info.size_in_bytes}')
-    print(f'Features: {mnist_info.features}')
+    print(f'Features:')
+    pprint(mnist_info.features)
 
-    print(f"Num train samples: {mnist_info.splits['train'].num_examples}, Num training samples: {mnist_info.splits['test'].num_examples}")
+    print(f"Num train and validation samples: {mnist_info.splits['train'].num_examples}, Num training samples: {mnist_info.splits['test'].num_examples}")
 
     return mnist_dataset, mnist_info.splits['train'].num_examples, mnist_info.splits['test'].num_examples
 
@@ -69,7 +72,7 @@ def split_data(train_data, num_train_valid_examples):
 
 def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, in_dic):
     train_valid_data = mnist_dataset['train']
-    test_data  = mnist_dataset['test']
+    test_data = mnist_dataset['test']
 
     # Scale data
     train_valid_data = train_valid_data.map(scale_0_to_1)
@@ -114,12 +117,17 @@ def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic
     model = prepare_model(in_dic)
 
     start = timer()
-    history = model.fit(train_data, epochs=in_dic['Num epochs'], validation_data=(valid_inputs, valid_targets), verbose=2)
+
+    if in_dic['Step by step']:
+        for start_epoch in range(in_dic['Num epochs']):
+            print(f'start_epoch: {start_epoch}')
+            history = model.fit(train_data, initial_epoch=start_epoch+1, epochs=start_epoch+2,
+                                validation_data=(valid_inputs, valid_targets), verbose=2)
+    else:
+        history = model.fit(train_data, epochs=in_dic['Num epochs'],
+                            validation_data=(valid_inputs, valid_targets), verbose=2)
+
     end = timer()
-    print("Time took to fit: " + str(end - start))
-    print(history.history)
-    print(f'history.history["accuracy"][0]: {history.history["accuracy"][0]}')
-    print(f'history.history["val_accuracy"][0]: {history.history["val_accuracy"][0]}')
 
     out_dic['Validate accuracy'] = history.history["val_accuracy"][0].round(3)
     out_dic['Train time'] = round(end - start, 3)
@@ -133,20 +141,22 @@ def do_numerous_loops():
     results = []
     in_dic = {}
 
-    for num_epochs in nums_epochs:
-        in_dic['Num epochs'] = num_epochs
-        for batch_size in batch_sizes:
-            in_dic['Batch size'] = batch_size
-            for hidden_width in hidden_widths:
-                in_dic['Hidden width'] = hidden_width
-                out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
-                result = in_dic.copy()
-                result.update(out_dic)
-                results.append(result)
+    for step_by_step in [True, False]:
+        in_dic['Step by step'] = step_by_step
+        for num_epochs in nums_epochs:
+            in_dic['Num epochs'] = num_epochs
+            for batch_size in batch_sizes:
+                in_dic['Batch size'] = batch_size
+                for hidden_width in hidden_widths:
+                    in_dic['Hidden width'] = hidden_width
+                    out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
+                    result = in_dic.copy()
+                    result.update(out_dic)
+                    results.append(result)
+                    print(result)
 
-    print(f'results:\n{results}')
     pf = pd.DataFrame(results)
-    print(f'pf:')
+    print(f'Results:')
     print(pf.to_string())
     pf.to_csv("output.csv")
 
