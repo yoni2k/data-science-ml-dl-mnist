@@ -32,9 +32,11 @@ from pprint import pprint
 
 """ Settings """
 FRACTION_VALIDATE = 0.1
+ACCURACY_IMPROVEMENT_DELTA = 0.01  # TODO: change to 0.001 or 0.0001?
+ACCURACY_IMPROVEMENT_PATIENCE = 2  # TODO: change to 3?
+MAX_NUM_EPOCHS = 15
 
-nums_epochs = [20]
-batch_sizes = [1000]
+batch_sizes = [100]
 hidden_widths = [50]
 
 
@@ -114,15 +116,22 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
 
     model = prepare_model(in_dic)
 
+    earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
+                                                     min_delta=ACCURACY_IMPROVEMENT_DELTA,
+                                                     patience=ACCURACY_IMPROVEMENT_PATIENCE,
+                                                     restore_best_weights=True)
+
     start = timer()
-    history = model.fit(train_data, epochs=in_dic['Num epochs'],
+    history = model.fit(train_data, epochs=MAX_NUM_EPOCHS, callbacks=[earlyCallback],
                         validation_data=(valid_inputs, valid_targets), verbose=2)
     end = timer()
+
+    actual_num_epochs = len(history.history["val_accuracy"])
 
     out_dic['Accuracy Validate Last'] = history.history["val_accuracy"][-1].round(4)
     out_dic['Accuracy Validate Best'] = max(history.history['val_accuracy']).round(4)
     out_dic['Train time'] = round(end - start, 3)
-    out_dic['Average epoch time'] = round((end - start) / in_dic['Num epochs'], 4)
+    out_dic['Average epoch time'] = round((end - start) / actual_num_epochs, 4)
     out_dic['Accuracy Train Last'] = history.history["accuracy"][-1].round(4)
     out_dic['Accuracy Train Best'] = max(history.history["accuracy"]).round(4)
 
@@ -133,19 +142,17 @@ def do_numerous_loops():
     results = []
     in_dic = {}
 
-    for num_epochs in nums_epochs:
-        in_dic['Num epochs'] = num_epochs
-        for batch_size in batch_sizes:
-            in_dic['Batch size'] = batch_size
-            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
-                                                                              num_test_examples, batch_size)
-            for hidden_width in hidden_widths:
-                in_dic['Hidden width'] = hidden_width
-                out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
-                result = in_dic.copy()
-                result.update(out_dic)
-                results.append(result)
-                print(result)
+    for batch_size in batch_sizes:
+        in_dic['Batch size'] = batch_size
+        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
+                                                                          num_test_examples, batch_size)
+        for hidden_width in hidden_widths:
+            in_dic['Hidden width'] = hidden_width
+            out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+            result = in_dic.copy()
+            result.update(out_dic)
+            results.append(result)
+            print(result)
 
     pf = pd.DataFrame(results)
     print(f'Results:')
