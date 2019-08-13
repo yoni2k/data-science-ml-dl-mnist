@@ -10,6 +10,15 @@ Encoding for outputs - one-hot encoding, 0 - [1,0,0,0,0,0,0,0,0,0] etc.
 Number of hidden layers: 2
 Activation function last layer: softmax
 
+TODOs:
+- Change BATCH_SIZE to be dynamic
+- Change HIDDEN_WIDTH to be dynamic
+- Change NUM_EPOCHS to be dynamic
+- Change NUM_EPOCHS to stop after a while
+- Change number of Widths (hidden layers)
+- Change activation functions (add sigmoid, tanh)
+- Give different learning rates
+- Do one run of the best inputs
 
 """
 
