@@ -11,9 +11,6 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
-- Change BATCH_SIZE to be dynamic
-- Change HIDDEN_WIDTH to be dynamic
-- Change NUM_EPOCHS to be dynamic
 - Change NUM_EPOCHS to stop after a while
 - Change number of Widths (hidden layers)
 - Change activation functions (add sigmoid, tanh)
@@ -23,7 +20,6 @@ TODOs:
 """
 
 """ Imports """
-
 import warnings
 with warnings.catch_warnings():
     warnings.simplefilter("ignore", category=FutureWarning)
@@ -35,9 +31,10 @@ import pandas as pd
 
 """ Settings """
 FRACTION_VALIDATE = 0.1
-BATCH_SIZE = 10000
-HIDDEN_WIDTH = 50
-NUM_EPOCHS = 1
+
+nums_epochs = [1]
+batch_sizes = [10000]
+hidden_widths = [50]
 
 def acquire_data():
     mnist_dataset, mnist_info = tfds.load(name='mnist', with_info=True, as_supervised=True)
@@ -70,7 +67,7 @@ def split_data(train_data, num_train_valid_examples):
     return train_data.take(num_validation_samples), train_data.skip(num_validation_samples)
 
 
-def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples):
+def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, in_dic):
     train_valid_data = mnist_dataset['train']
     test_data  = mnist_dataset['test']
 
@@ -86,7 +83,7 @@ def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples):
     valid_data, train_data = split_data(train_valid_data, num_train_valid_examples)
 
     # Batch train data
-    train_data = train_data.batch(BATCH_SIZE)
+    train_data = train_data.batch(in_dic['Batch size'])
     valid_data = valid_data.batch(num_train_valid_examples)  # giving a too big of a number = keep in one batch
     test_data = test_data.batch(num_test_examples)  #keep in one batch
 
@@ -94,14 +91,14 @@ def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples):
 
     return train_data, valid_inputs, valid_targets, test_data
 
-def prepare_model():
+def prepare_model(in_dic):
     input_size = 784  # 28*28 since we are flattening the image of 28 by 28 pixels
     output_size = 10
 
     model = tf.keras.Sequential([
                                 tf.keras.layers.Flatten(input_shape=(28,28,1)),
-                                tf.keras.layers.Dense(HIDDEN_WIDTH, activation='relu'),
-                                tf.keras.layers.Dense(HIDDEN_WIDTH, activation='relu'),
+                                tf.keras.layers.Dense(in_dic['Hidden width'], activation='relu'),
+                                tf.keras.layers.Dense(in_dic['Hidden width'], activation='relu'),
                                 tf.keras.layers.Dense(output_size, activation='softmax'),
                                 ])
 
@@ -113,8 +110,8 @@ def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic
     out_dic = {}
 
     train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
-                                                                      num_test_examples)
-    model = prepare_model()
+                                                                      num_test_examples, in_dic)
+    model = prepare_model(in_dic)
 
     start = timer()
     history = model.fit(train_data, epochs=in_dic['Num epochs'], validation_data=(valid_inputs, valid_targets), verbose=2)
@@ -124,10 +121,10 @@ def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic
     print(f'history.history["accuracy"][0]: {history.history["accuracy"][0]}')
     print(f'history.history["val_accuracy"][0]: {history.history["val_accuracy"][0]}')
 
-    out_dic['Train accuracy'] = history.history["accuracy"][0]
-    out_dic['Validate accuracy'] = history.history["val_accuracy"][0]
-    out_dic['Train time'] = end - start
-    out_dic['Average epoch time'] = (end - start) / in_dic['Num epochs']
+    out_dic['Validate accuracy'] = history.history["val_accuracy"][0].round(3)
+    out_dic['Train time'] = round(end - start, 3)
+    out_dic['Average epoch time'] = round((end - start) / in_dic['Num epochs'], 3)
+    out_dic['Train accuracy'] = history.history["accuracy"][0].round(3)
 
     return out_dic
 
@@ -136,16 +133,21 @@ def do_numerous_loops():
     results = []
     in_dic = {}
 
-    for num_epochs in [1, 2]:
+    for num_epochs in nums_epochs:
         in_dic['Num epochs'] = num_epochs
-        out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
-        out_dic.update(in_dic)
-        results.append(out_dic)
-        print(f'out_dic: {out_dic}')
+        for batch_size in batch_sizes:
+            in_dic['Batch size'] = batch_size
+            for hidden_width in hidden_widths:
+                in_dic['Hidden width'] = hidden_width
+                out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
+                result = in_dic.copy()
+                result.update(out_dic)
+                results.append(result)
 
     print(f'results:\n{results}')
     pf = pd.DataFrame(results)
-    print(f'pf: \n{pf}')
+    print(f'pf:')
+    print(pf.to_string())
     pf.to_csv("output.csv")
 
 
