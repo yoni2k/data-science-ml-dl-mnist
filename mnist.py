@@ -22,6 +22,7 @@ with warnings.catch_warnings():
 import tensorflow_datasets as tfds  # getting MNIST from there
 from timeit import default_timer as timer
 import numpy as np
+import pandas as pd
 
 """ Settings """
 FRACTION_VALIDATE = 0.1
@@ -98,6 +99,7 @@ def prepare_model():
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     return model
 
+
 def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic):
     out_dic = {}
 
@@ -106,17 +108,37 @@ def single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic
     model = prepare_model()
 
     start = timer()
-    history = model.fit(train_data, epochs=NUM_EPOCHS, validation_data=(valid_inputs, valid_targets), verbose=2)
+    history = model.fit(train_data, epochs=in_dic['Num epochs'], validation_data=(valid_inputs, valid_targets), verbose=2)
     end = timer()
     print("Time took to fit: " + str(end - start))
     print(history.history)
     print(f'history.history["accuracy"][0]: {history.history["accuracy"][0]}')
     print(f'history.history["val_accuracy"][0]: {history.history["val_accuracy"][0]}')
 
+    out_dic['Train accuracy'] = history.history["accuracy"][0]
+    out_dic['Validate accuracy'] = history.history["val_accuracy"][0]
+    out_dic['Train time'] = end - start
+    out_dic['Average epoch time'] = (end - start) / in_dic['Num epochs']
+
     return out_dic
 
 
+def do_numerous_loops():
+    results = []
+    in_dic = {}
+
+    for num_epochs in [1, 2]:
+        in_dic['Num epochs'] = num_epochs
+        out_dic = single_model(mnist_data, num_train_valid_examples, num_test_examples, in_dic)
+        out_dic.update(in_dic)
+        results.append(out_dic)
+        print(f'out_dic: {out_dic}')
+
+    print(f'results:\n{results}')
+    pf = pd.DataFrame(results)
+    print(f'pf: \n{pf}')
+    pf.to_csv("output.csv")
+
+
 mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
-single_model(mnist_data, num_train_valid_examples, num_test_examples, {})
-
-
+do_numerous_loops()
