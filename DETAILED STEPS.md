@@ -117,4 +117,28 @@
 - Hidden funcs - 'relu' and 'tanh' should not be removed, possibly need to add 'softmax'
 - ACCURACY_IMPROVEMENT_DELTA, ACCURACY_IMPROVEMENT_PATIENCE - 0.01 and 2.  Patience leave 2 since cycles take a lot of time. Better to have delta 0.001 at least,
     but will take much longer, so for brute solutions, leave 0.01
-- MAX_NUM_EPOCHS - was 15, leave 15 for if doing delta 0.001, can put 10 if for now staying with delta 0.01 
+- MAX_NUM_EPOCHS - was 15, leave 15 for if doing delta 0.001, can put 10 if for now staying with delta 0.01
+
+## Conclusions 2 - number of layers:
+### Details
+- Layers
+    - Layer 3
+        - Some of the worst accuracies (92-96)
+        - didn't use all 10 epochs
+        - Some of the best efficiencies because of good times
+    - Layer 4
+        - Not great accuracies
+    - Layer 5
+        - Some of the better accuracies and efficiencies
+    - Layer 6
+        - Mixed - sometimes best, sometimes worst in all categories
+- Accuracy
+    - Best - Some 4, some 5, some 6 layers, none 3
+    - Top 1/3 - 5 and 6
+    - Top 10% - all 6
+    - 4 appears in top 40% - .011 difference from best
+- Efficiency (accuracy / time)
+    - Top 10% already has 6 and 5
+    - Top 27% has 4 already, but not with best result    
+### Conclusions going forward: 
+- With the given other parameters, 5 seems best, but 4 and 6 should be left in the trials (also interesting to check if 3 and 7 for sure worse)

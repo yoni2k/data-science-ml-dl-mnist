@@ -45,22 +45,24 @@ ACCURACY_IMPROVEMENT_PATIENCE = 2
 # MAX_NUM_EPOCHS = 15
 MAX_NUM_EPOCHS = 10
 
-# Tried before [100, 1000]
+# Tried before [100, 1000], [500],
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
-batch_sizes = [500]
+batch_sizes = [100, 500, 1000]
 
-## Tried before [10, 64],
+## Tried before [10, 64], [50],
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 # hidden_widths = [1, 64, 128]
 hidden_widths = [50]
 
-#nums_layers = [2, 3, 4, 5, 6, 10]
-#nums_layers = [2, 4, 6]
-nums_layers = [3, 4, 5, 6]
+# Tried [3, 4, 5, 6],
+#nums_layers = [2, 3, 4, 5, 6, 7, 10]
+#nums_layers = [3, 4, 5, 6]
+nums_layers = [5]
 
 #functions = ['sigmoid', 'tanh', 'relu', 'softmax']
 functions = ['relu', 'sigmoid', 'tanh']
+#functions = ['relu']
 
 def acquire_data():
     mnist_dataset, mnist_info = tfds.load(name='mnist', with_info=True, as_supervised=True)
