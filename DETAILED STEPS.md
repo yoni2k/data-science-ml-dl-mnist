@@ -152,3 +152,13 @@
 ### Conclusions going forward:
     - 100 seems better than alternatives, look around 100  
 
+## Conclusions 4 - batch size: [50,100,250,500]
+### Details
+- Batch size 500 is never best both in accuracy and efficiency together
+- Top half in Accuracy and Efficiency Efficiency (accuracy/time):
+    - Batch sizes 50, 100, 250 have all some of the best results
+    - 250 is not in both accuracy and time results
+### Conclusions going forward:
+    - Need to rerun with not such a quick StopFunction - at least 0.001, and 15 iterations
+    - Can drop 500, can introduce a number between 50 and 100, and 100 and 250
+    - Also noticed that my functions didn't give all options, rerunning also for that reason  

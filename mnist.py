@@ -35,20 +35,20 @@ import itertools
 FRACTION_VALIDATE = 0.1
 
 #ACCURACY_IMPROVEMENT_DELTA = 0.0001  # TODO: Leave 0.0001?
-#ACCURACY_IMPROVEMENT_DELTA = 0.001  # TODO: Leave 0.0001?
-ACCURACY_IMPROVEMENT_DELTA = 0.01  #
+ACCURACY_IMPROVEMENT_DELTA = 0.001  # TODO: Leave 0.0001?
+# ACCURACY_IMPROVEMENT_DELTA = 0.01  #
 
 #ACCURACY_IMPROVEMENT_PATIENCE = 3  # TODO: Leave 3 or is 2 enough?
 ACCURACY_IMPROVEMENT_PATIENCE = 2
 
 # MAX_NUM_EPOCHS = 50  # Probably never need so much, 10-20 is probably enough
-# MAX_NUM_EPOCHS = 15
-MAX_NUM_EPOCHS = 10
+MAX_NUM_EPOCHS = 15
+# MAX_NUM_EPOCHS = 10
 
-# Tried before [100, 1000], [500],
+# Tried before [100, 1000], [500], [50, 100, 250, 500],
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
-batch_sizes = [50, 100, 250, 500]
+batch_sizes = [50, 75, 100, 170, 250]
 
 ## Tried before [10, 64], [50],
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
@@ -186,7 +186,7 @@ def do_numerous_loops():
                                                                           num_test_examples, batch_size)
         for num_layers in nums_layers:
             in_dic['Num layers'] = num_layers
-            for hidden_funcs in itertools.combinations_with_replacement(functions, num_layers - 2):
+            for hidden_funcs in itertools.product(functions, repeat=(num_layers - 2)):
                 in_dic['Hidden funcs'] = hidden_funcs
                 for hidden_width in hidden_widths:
                     num_model_trainings += 1
@@ -252,7 +252,6 @@ def do_numerous_loops():
     print(f'BEST RESULTS:')
     print(pf.to_string())
     pf.to_excel("output\\best.xlsx")
-
 
 mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 do_numerous_loops()
