@@ -192,7 +192,7 @@ def do_numerous_loops():
                     print(f'Model {num_model_trainings}, '
                           f'total time min: {round(time_running_sec / 60, 1)}, '
                           f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
-                          f'seconds per model: {round(time_running_sec / num_model_trainings)}'
+                          f'seconds per model: {round(time_running_sec / num_model_trainings)} '
                           f'====================================')
                     in_dic['Hidden width'] = hidden_width
                     out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
@@ -217,7 +217,7 @@ def do_numerous_loops():
     pf = pd.DataFrame(results)
     print(f'ALL RESULTS:')
     print(pf.to_string())
-    pf.to_csv("output\\full.csv")
+    pf.to_excel("output\\full.xlsx")
 
     time_running_sec = timer() - time_run_started
 
@@ -237,7 +237,7 @@ def do_numerous_loops():
     pf = pd.DataFrame([hyperparams])
     print(f'HYPERPARAMS:')
     print(pf.to_string())
-    pf.to_csv("output\\hyperparams.csv")
+    pf.to_excel("output\\hyperparams.xlsx")
 
     quickest_with_type = {'Type': 'QUICKEST'}
     quickest_with_type.update(quickest)
@@ -249,7 +249,7 @@ def do_numerous_loops():
     pf = pd.DataFrame([quickest_with_type, best_accuracy_with_type, efficient_with_type])
     print(f'BEST RESULTS:')
     print(pf.to_string())
-    pf.to_csv("output\\best.csv")
+    pf.to_excel("output\\best.xlsx")
 
 
 mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
