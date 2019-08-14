@@ -1,0 +1,120 @@
+# Conclusions per execution:
+## Conclusions 1 - initial:
+### Details
+- Num epochs
+    - Max number of Epochs (15) with a very quick StopFunction (0.1 diff, patience 2) was reached only:
+        - With Hidden Width = 10 (clearly sub-optimal)
+        - With accuracy not approaching great results (range 0.8-0.9)
+        - With large batch sum (1000) - probably with smaller number reached best quicker
+        - Mostly with larger num layers (5) - does it mean that for smaller number gave up quicker or reached quicker?
+    - Number of epochs > 10, but < 15
+        - No great results .88-.95
+        - Mostly hidden width = 10 (a few with hidden width 64 gave relatively good results)
+        - Mostly large batch sum (1000), a few with small batch size (100) finished relatively quickly (11 epochs)
+    - 3 epochs only with worst result (0.1)
+    - 4-6
+        - some of the best results in all categories
+        - Most batch size 100 (smaller)
+        - Most num layers 5 (larger)
+        - Most Hidden width larger 64 (with smaller much worse results)
+    - 7-10
+        - Some of the best accuracy, but not best time
+    - Thoughts
+        - Seems that don't need more epochs
+        - With given hyperparameters, could even use less epochs, but since will make the StopFunction to be slower, need to leave this number and check again if enough / too much 
+- Average epoch time
+    - Range 6 - 11
+    - Worse with smaller batch size, better with larger batch size 
+    - < 7
+        - Larger batch size (1000)
+        - Usually worse total times and larger number of iterations
+    - \> 9
+        - Small batch sizes (100)
+        - Large number of layers (5)
+        - Some of the best accuracies
+    - Thoughts: 
+        - Not a helpful metric, since has high correlation to batch sizes - could be better fewer slower epochs with smaller number of batch sizes
+- Hidden width [10,64]
+    - 10
+        - Never gives good accuracy
+        - Sometimes gives good times, but not with good accuracy
+    - Thoughts: 
+        - Need to enlarge, see if more than 64 is better, or less
+- Batch size [100,1000]
+    - 1000 - never gives best results (perhaps because of quick StopFunction)
+    - Thoughts:
+        - 100 seems better than 1000, need to try something in-between
+- Num layers [4, 5]
+    - Best accuracy results both in 4 and 5, but more in 5
+    - Time-wise, 5 seems to be better 
+    - Thoughts:
+        - Can't give up on 4 completely
+        - Some time in the future, need to try 3 to see if it's much worse than 4
+        - 6 might possibly be better - need to try
+- Accuracy
+    - < .9
+        - Large batch size (1000)
+        - Small hidden width size (10)
+        - A lot of sigmoid functions
+        - Also usually large times
+    - [.978 - .987] - best
+        - All batch size 100
+        - All width 64
+        - Usually comes with pretty good times too
+        - 4-8 epochs
+        - Shortest time - 30 sec, longest - 90 sec
+    - \> .95, and <.978
+        - Large number of batch size 1000 !
+        - All width 64
+        - Usually comes with pretty good times too
+        - 4-9 epochs
+    - Thoughts:
+        - Can dismiss width 10
+        - Batch size 100 seems better, but can't completely dismiss 1000
+- Train time
+    - 21 - 107 seconds range
+    - \> 100
+        - 15 epochs
+        - Batch size 1000
+        - Hidden width 10
+        - None of the best times
+    - [84, 100]
+        - Mostly large number of epochs (13-15)
+        - Mostly batch size 1000
+        - Mostly not great accuracies
+    - 21 - didn't learn 
+    - [30-34]
+        - With batch size 100 and Hidden width 64
+            - some of the best accuracies too and some of the best efficiencies
+            - smallest number of epochs (4-5)
+    -  [34-50]
+        - Mostly batch size 100
+        - Good results with hidden width 64
+        - Mostly 4-7 epochs
+        - Good ones 7-8 seconds per epoch
+- Efficiency (accuracy / time)
+    - 0.005 to .032
+    - [0.31,0.32]
+        - Batch size 100
+        - Num layers varies
+        - Funcs relu, tanh, [tanh]
+        - Number of epochs - 4
+    - [0.25, 0.26]
+        - Batch size 100
+        - Num layers - 5 (longer to reach than varying 4 above)
+        - Hidden width - 64
+        - Functions - `relu` first, but sometimes also `tanh`
+    - < .01
+        - Batch size 1000
+        - Usually num layers = 5, and not 4
+        - Hidden width = 10
+        - Usually 15 epochs
+        
+### Conclusions going forward:
+- Num layers - not clear what's better - 5 sometimes gives better results but usually slower.  Try 3 to prove than worse, try 6 to prove that worse than 5 because of time it takes
+- Batch size - 100 is usually better than 1000 but not by knockout - try something in the middle, and lower than 100
+- Hidden width - 64 is clearly better than 10, need to try higher and lower than 64
+- Hidden funcs - 'relu' and 'tanh' should not be removed, possibly need to add 'softmax'
+- ACCURACY_IMPROVEMENT_DELTA, ACCURACY_IMPROVEMENT_PATIENCE - 0.01 and 2.  Patience leave 2 since cycles take a lot of time. Better to have delta 0.001 at least,
+    but will take much longer, so for brute solutions, leave 0.01
+- MAX_NUM_EPOCHS - was 15, leave 15 for if doing delta 0.001, can put 10 if for now staying with delta 0.01 
