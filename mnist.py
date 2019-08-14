@@ -48,7 +48,7 @@ MAX_NUM_EPOCHS = 10
 # Tried before [100, 1000], [500],
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
-batch_sizes = [100, 500, 1000]
+batch_sizes = [50, 100, 250, 500]
 
 ## Tried before [10, 64], [50],
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]

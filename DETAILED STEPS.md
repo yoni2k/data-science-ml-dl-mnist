@@ -142,3 +142,13 @@
     - Top 27% has 4 already, but not with best result    
 ### Conclusions going forward: 
 - With the given other parameters, 5 seems best, but 4 and 6 should be left in the trials (also interesting to check if 3 and 7 for sure worse)
+
+## Conclusions 3 - batch size: [100,500,1000]
+### Details
+- Accuracy
+    - 100s - vast majority in top half, a few from 500 and 1000 either take longer, or not the top accuracy
+- Efficiency (accuracy/time):
+    - Top half are 100s with best accuracies, or 500 / 1000 not with best accuracy
+### Conclusions going forward:
+    - 100 seems better than alternatives, look around 100  
+
