@@ -255,3 +255,9 @@
 ### Conclusions going forward:
 - Extra time / extra number of epochs done due change of StopFunction is not drastic, but results improved, although they are not exactly the same
 - Previous conclusion: - Need to check again if reading the data, or preparing the data causes the fluctuation between results
+
+# Conclusions 12 - reading the data moved to be performed every time in the loop, see if it makes differences larger (if data read from tensorflow_datasets different / different order every time)
+- Accuracies Product - between .9976 and .9999, so it didn't help to move getting data inside the loop to get more different results
+- Accuracies Product - one of them was 99.99! - which means making a mistake on 7 out of 70,000 results
+### Conclusions going forward:
+- Previous conclusion: Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time

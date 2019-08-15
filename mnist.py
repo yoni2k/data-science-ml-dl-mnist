@@ -271,8 +271,9 @@ def do_numerous_loops():
 def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
     results = []
 
+    mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
+
     for loop in range(num_loops):
-        mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
         train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
                                                                           num_train_valid_examples,
                                                                           num_test_examples,
@@ -296,7 +297,7 @@ single_model_with_acquire_prepare_data_num_loops(5,
                                                  {'Accuracy improvement delta': 0.0001,
                                                   'Accuracy improvement patience': 3,
                                                   'Max num epochs': 100,
-                                                  'Batch size': 200,
+                                                  'Batch size': 500,
                                                   'Num layers': 4,
                                                   'Hidden funcs': ('tanh', 'relu'),
                                                   'Hidden width': 100})
