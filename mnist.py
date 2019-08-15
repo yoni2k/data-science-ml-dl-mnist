@@ -11,15 +11,13 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
-- Add output of best results for 1) fastest 2) best accuracy 3) best accuracy / time took
+- Need to check with different seeds and numerous times to make sure what was chosen was not luck for the specific split
+- Need to check with endless iterations, but batch size largest.  Possibly same or better result, but longer?
+- Need to check without batch sizes at all but with endless epochs to see if always get better and consistent results
 - Give different learning rates
-- Do one run of the best inputs
 - Write comments
-- Add 'softmax' function
-- Does function order matter?
 - Try extreme values to see what effect they have
 - TODOs
-
 """
 
 """ Imports """
@@ -43,23 +41,20 @@ MAX_NUM_EPOCHS = 25
 
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
-#batch_sizes = [1, 100, 1000, 10000, 1000000]
-#batch_sizes = [1, 1000, 1000000]
-batch_sizes = [100, 150, 200]
+batch_sizes = [200, 220]
 
 ## Tried before [10, 64], [50], [25, 50, 75]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-hidden_widths = [60, 75, 100]
+hidden_widths = [100, 120]
 
 # Tried [3, 4, 5, 6], [5], [4]
-#nums_layers = [2, 3, 4, 5, 6, 7, 10]
 # Current conclusion - 4 layers seems enough, although with 5 layers get similar results (and sometimes takes longer)
-#nums_layers = [3, 4, 5, 6]
+#nums_layers = [2, 3, 4, 5, 6, 10]
 nums_layers = [4]
 
 #functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-functions = ['relu', 'sigmoid', 'tanh', 'softmax']
+functions = ['relu', 'sigmoid', 'tanh']
 #functions = ['relu']
 
 def acquire_data():

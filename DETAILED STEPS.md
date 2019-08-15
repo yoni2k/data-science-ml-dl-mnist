@@ -210,3 +210,26 @@
 - Got 0.9964 product accuracy - so 4 layers seems more than enough
 ### Conclusions going forward:
 - Leave 4 layers for now, play with other parameters - fine tune other parameters on 4 layers
+
+## Conclusions 8 - 4 layers with different options of all 4 activation functions, batch_sizes = [100, 150, 200], hidden_widths = [60, 75, 100], 
+### Details
+- Number of epochs - 25
+    - 1 of the best ones didn't finish, but most didn't need more, and it seems that have plenty similar that did
+    - A third almost reached 25 epochs, so it's good we stopped at 25, otherwise it would take much longer
+- Activation functions
+    - softmax is not helpful ever
+    - sigmoid is never first, but in some cases not a lot behind.  Can for now remove as first, since plenty similar
+- Accuracies Product - best .9993 (Validate 0.9998, Train 0.9995)
+    - Top 5% - .9981-.9993
+        - Different batch sizes [100, 150, 200], but more 200, and where not 200, there is another similar result in 200
+        - Hidden widths all largest 100
+        - First activation function is always relu / tanh
+    - Best: Batch size 200, Hidden funcs - ('tanh', 'relu'), Hidden width - 100 
+### Conclusions going forward:
+- If would continue: 
+    - Width - possibly more than 100 could do better?
+    - Batch size - 200 is best or same, perhaps try higher?
+    - Remove softmax function altogether, remove sigmoid as first
+- Need to check with endless iterations, but batch size largest.  Possibly same or better result, but longer?
+- Need to check with different seed to make sure what was chosen was not luck for the specific split
+- Need to check without batch sizes at all but with endless epochs to see if always get better and consistent results
