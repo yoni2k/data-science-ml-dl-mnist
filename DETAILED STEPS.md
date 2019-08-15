@@ -190,3 +190,19 @@
 - Enlarge number of epochs to 30 since some of the best results it wasn't enough to have 25 epochs
 - The whole range seems to produce some of the best results, with batch 250 possibly less so.  Perhaps run 150 as default, and 50 and 250 as extras from now on
 - Next step: try different number of widths: 25, 50, 75
+
+## Conclusions 6 - hidden width size: [25,50,75] + much slower StopFunction + all function variations
+### Details
+- Epochs - max 25 - Some of the best results reached maximum of 25 epochs, but also many of the bad ones
+- Width 25 - some of the worst in all parameters
+- Width 50 - some of the best in accuracies, but not so much efficiency 
+- Width 75 - best accuracies, some of the best efficiencies
+- Accuracy - Most of best width 75, some 50
+- Product accuracy - best 0.9956 - vast majority 75
+### Conclusions going forward:
+- Width 75 seems best, need to check if going up helps (100?)
+- For now setting on 75
+- Next run: try if 4 layers give drastically worse results
+
+
+- 

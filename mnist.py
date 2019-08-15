@@ -16,6 +16,7 @@ TODOs:
 - Do one run of the best inputs
 - Write comments
 - Add 'softmax' function
+- Does function order matter?
 - Try extreme values to see what effect they have
 
 """
@@ -52,15 +53,15 @@ MAX_NUM_EPOCHS = 25
 #batch_sizes = [1, 1000, 1000000]
 batch_sizes = [150]
 
-## Tried before [10, 64], [50],
+## Tried before [10, 64], [50], [25, 50, 75]
+# Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-# hidden_widths = [1, 64, 128]
-hidden_widths = [25, 50, 75]
+hidden_widths = [75]
 
 # Tried [3, 4, 5, 6],
 #nums_layers = [2, 3, 4, 5, 6, 7, 10]
 #nums_layers = [3, 4, 5, 6]
-nums_layers = [5]
+nums_layers = [4]
 
 #functions = ['sigmoid', 'tanh', 'relu', 'softmax']
 functions = ['relu', 'sigmoid', 'tanh']
