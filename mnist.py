@@ -11,8 +11,6 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
-- Try with even slower StopFunction (0.0001 and not 0.001 delta that was used till now)
-- Need to check again if reading the data, or preparing the data causes the fluctuation between results
 - Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time
 - Give different learning rates
 - Write comments
@@ -273,9 +271,8 @@ def do_numerous_loops():
 def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
     results = []
 
-    mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
-
     for loop in range(num_loops):
+        mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
         train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
                                                                           num_train_valid_examples,
                                                                           num_test_examples,

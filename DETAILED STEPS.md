@@ -247,3 +247,11 @@
 - Try with even slower StopFunction (0.0001 and not 0.001 delta that was used till now)
 - Need to check again if reading the data, or preparing the data causes the fluctuation between results
 - Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time
+
+# Conclusions 11 - running with even slower StopFunction (0.0001 and not 0.001 delta that was used till now)
+- Number of epochs needed most: 24, usually lower 
+- Product accuracy - between .9946 and .9993 (average of 5: .9977)
+- Training time - 2-3 minutes
+### Conclusions going forward:
+- Extra time / extra number of epochs done due change of StopFunction is not drastic, but results improved, although they are not exactly the same
+- Previous conclusion: - Need to check again if reading the data, or preparing the data causes the fluctuation between results
