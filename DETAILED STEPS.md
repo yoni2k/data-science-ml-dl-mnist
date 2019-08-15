@@ -204,5 +204,9 @@
 - For now setting on 75
 - Next run: try if 4 layers give drastically worse results
 
-
-- 
+## Conclusions 7 - 4 instead of 5 layers
+### Details
+- Num epochs - seems that 25 was enough
+- Got 0.9964 product accuracy - so 4 layers seems more than enough
+### Conclusions going forward:
+- Leave 4 layers for now, play with other parameters - fine tune other parameters on 4 layers

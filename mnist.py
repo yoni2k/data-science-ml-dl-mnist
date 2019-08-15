@@ -28,7 +28,6 @@ with warnings.catch_warnings():
     import tensorflow as tf
 import tensorflow_datasets as tfds  # getting MNIST from there
 from timeit import default_timer as timer
-import numpy as np
 import pandas as pd
 from pprint import pprint
 import itertools
@@ -44,27 +43,29 @@ ACCURACY_IMPROVEMENT_DELTA = 0.001  # TODO: Leave 0.0001?
 ACCURACY_IMPROVEMENT_PATIENCE = 3
 
 # MAX_NUM_EPOCHS = 50  # Probably never need so much, 10-20 is probably enough
+# Current conclusions - with Delta 0.001 and Patience 3, need 25 and possibly 30
 MAX_NUM_EPOCHS = 25
 # MAX_NUM_EPOCHS = 10
 
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250]
-# Current conclusion - 100 seems the best, but 50-250 all give good results
+# Current conclusion - 100 seems the best, but 50-250 all give good results, so staying with 150
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
-batch_sizes = [150]
+batch_sizes = [100, 150, 200]
 
 ## Tried before [10, 64], [50], [25, 50, 75]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-hidden_widths = [75]
+hidden_widths = [60, 75, 100]
 
-# Tried [3, 4, 5, 6],
+# Tried [3, 4, 5, 6], [5], [4]
 #nums_layers = [2, 3, 4, 5, 6, 7, 10]
+# Current conclusion - 4 layers seems enough, although with 5 layers get similar results (and sometimes takes longer)
 #nums_layers = [3, 4, 5, 6]
 nums_layers = [4]
 
 #functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-functions = ['relu', 'sigmoid', 'tanh']
+functions = ['relu', 'sigmoid', 'tanh', 'softmax']
 #functions = ['relu']
 
 def acquire_data():
@@ -266,7 +267,7 @@ def do_numerous_loops():
     efficient_product_with_type = {'Type': 'EFFICIENT PROD'}
     efficient_product_with_type.update(efficient_product)
 
-    pf = pd.DataFrame([quickest_with_type, best_accuracy_with_type, efficient_with_type])
+    pf = pd.DataFrame([quickest_with_type, best_accuracy_with_type, efficient_with_type, product_with_type, efficient_product_with_type])
     print(f'BEST RESULTS:')
     print(pf.to_string())
     pf.to_excel("output\\best.xlsx")
