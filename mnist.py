@@ -18,6 +18,7 @@ TODOs:
 - Add 'softmax' function
 - Does function order matter?
 - Try extreme values to see what effect they have
+- TODOs
 
 """
 
@@ -34,21 +35,14 @@ import itertools
 
 """ Settings """
 FRACTION_VALIDATE = 0.1
-
-#ACCURACY_IMPROVEMENT_DELTA = 0.0001  # TODO: Leave 0.0001?
-ACCURACY_IMPROVEMENT_DELTA = 0.001  # TODO: Leave 0.0001?
-# ACCURACY_IMPROVEMENT_DELTA = 0.01  #
-
-#ACCURACY_IMPROVEMENT_PATIENCE = 3  # TODO: Leave 3 or is 2 enough?
+ACCURACY_IMPROVEMENT_DELTA = 0.001
 ACCURACY_IMPROVEMENT_PATIENCE = 3
 
-# MAX_NUM_EPOCHS = 50  # Probably never need so much, 10-20 is probably enough
 # Current conclusions - with Delta 0.001 and Patience 3, need 25 and possibly 30
 MAX_NUM_EPOCHS = 25
-# MAX_NUM_EPOCHS = 10
 
-# Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250]
-# Current conclusion - 100 seems the best, but 50-250 all give good results, so staying with 150
+# Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200]
+# Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
 batch_sizes = [100, 150, 200]
@@ -100,7 +94,7 @@ def split_data(train_data, num_train_valid_examples):
     return train_data.take(num_validation_samples), train_data.skip(num_validation_samples)
 
 
-def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, batch_size):
+def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, batch_size, shuffle_seed):
     train_valid_data = mnist_dataset['train']
     test_data = mnist_dataset['test']
 
@@ -109,8 +103,8 @@ def prepare_data(mnist_dataset, num_train_valid_examples, num_test_examples, bat
     test_data = test_data.map(scale_0_to_1)
 
     # Shuffle training data
-    train_valid_data = train_valid_data.shuffle(num_train_valid_examples, seed=100)
-    test_data = test_data.shuffle(num_test_examples, seed=100)
+    train_valid_data = train_valid_data.shuffle(num_train_valid_examples, seed=shuffle_seed)
+    test_data = test_data.shuffle(num_test_examples, seed=shuffle_seed)
 
     # Split training and validation data
     valid_data, train_data = split_data(train_valid_data, num_train_valid_examples)
@@ -154,7 +148,7 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
                                                      restore_best_weights=True)
 
     start = timer()
-    history = model.fit(train_data, epochs=MAX_NUM_EPOCHS, callbacks=[earlyCallback],
+    history = model.fit(train_data, epochs=in_dic['Max num epochs'], callbacks=[earlyCallback],
                         validation_data=(valid_inputs, valid_targets), verbose=2)
     end = timer()
 
@@ -176,7 +170,10 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
 
 def do_numerous_loops():
     results = []
-    in_dic = {}
+    in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
+              'Shuffle seed': 100}
+
+    mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 
     # TODO initiate to better values
     quickest = {'Train time': 10000}
@@ -190,8 +187,11 @@ def do_numerous_loops():
 
     for batch_size in batch_sizes:
         in_dic['Batch size'] = batch_size
-        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data, num_train_valid_examples,
-                                                                          num_test_examples, batch_size)
+        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                                                          num_train_valid_examples,
+                                                                          num_test_examples,
+                                                                          batch_size,
+                                                                          in_dic['Shuffle seed'])
         for num_layers in nums_layers:
             in_dic['Num layers'] = num_layers
             for hidden_funcs in itertools.product(functions, repeat=(num_layers - 2)):
@@ -245,7 +245,7 @@ def do_numerous_loops():
         'Seconds per model': round(time_running_sec / num_model_trainings),
         'Accuracy improve delta': ACCURACY_IMPROVEMENT_DELTA,
         'Accuracy improve patience': ACCURACY_IMPROVEMENT_PATIENCE,
-        'Max Num Epochs': MAX_NUM_EPOCHS,
+        'Max Num Epochs': in_dic['Max num epochs'],
         'Batch sizes': batch_sizes,
         'Hidden Widths': hidden_widths,
         'Nums layers': nums_layers,
@@ -273,5 +273,34 @@ def do_numerous_loops():
     pf.to_excel("output\\best.xlsx")
 
 
-mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
-do_numerous_loops()
+def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
+    results = []
+
+    mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
+
+    for loop in range(num_loops):
+        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                                                          num_train_valid_examples,
+                                                                          num_test_examples,
+                                                                          in_dic['Batch size'],
+                                                                          loop)  #use loop number as shuffle seed
+
+        out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+        result = in_dic.copy()
+        result.update(out_dic)
+
+        print(f'RESULT: {result}')
+        results.append(result)
+
+    pf = pd.DataFrame(results)
+    print(f'ALL RESULTS:')
+    print(pf.to_string())
+
+
+#do_numerous_loops()
+single_model_with_acquire_prepare_data_num_loops(5,
+                                                 {'Max num epochs': 25,
+                                                  'Batch size': 200,
+                                                  'Num layers': 4,
+                                                  'Hidden funcs': ('tanh', 'relu'),
+                                                  'Hidden width': 100})
