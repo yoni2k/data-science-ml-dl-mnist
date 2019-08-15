@@ -162,3 +162,31 @@
     - Need to rerun with not such a quick StopFunction - at least 0.001, and 15 iterations
     - Can drop 500, can introduce a number between 50 and 100, and 100 and 250
     - Also noticed that my functions didn't give all options, rerunning also for that reason  
+
+
+## Conclusions 5 - batch size: [50,75,100,170,250] + much slower StopFunction + all function variations
+### Details
+- Seems to have some overfitting on validate accuracy
+- Some of the best results it wasn't enough to have 25 epochs
+- Batch
+    - 50 - some of the best accuracies and efficiencies
+    - 75 - some of the best accuracies and efficiencies
+    - 100 - same
+    - 170 & 250 - some of the best accuracies, but not the most efficient
+- Accuracy
+    - absolutely best is with 100
+    - some of the best in each one of the categories: 50,75,100,170,250
+- Efficiency
+    - Some of the best in all categories besides 250, but accuracies are not the best
+- Accuracy product
+    - Best .9945
+    - Some of the best in all categories, including 250
+- Accuracy product per time
+    - Some of the best in all categories, besides 250, but accuracies not good
+- Best both accuracy product and Accuracy Product per Time
+    - Accuracy Product - around .99 (.9905-.9912) with best being .9945
+### Conclusions going forward:
+- Add 2 new metrics: product of accuracies and efficiency of product (product of accuracies / time) - to make sure there is no overfitting on validate accuracy
+- Enlarge number of epochs to 30 since some of the best results it wasn't enough to have 25 epochs
+- The whole range seems to produce some of the best results, with batch 250 possibly less so.  Perhaps run 150 as default, and 50 and 250 as extras from now on
+- Next step: try different number of widths: 25, 50, 75

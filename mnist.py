@@ -16,6 +16,7 @@ TODOs:
 - Do one run of the best inputs
 - Write comments
 - Add 'softmax' function
+- Try extreme values to see what effect they have
 
 """
 
@@ -39,21 +40,22 @@ ACCURACY_IMPROVEMENT_DELTA = 0.001  # TODO: Leave 0.0001?
 # ACCURACY_IMPROVEMENT_DELTA = 0.01  #
 
 #ACCURACY_IMPROVEMENT_PATIENCE = 3  # TODO: Leave 3 or is 2 enough?
-ACCURACY_IMPROVEMENT_PATIENCE = 2
+ACCURACY_IMPROVEMENT_PATIENCE = 3
 
 # MAX_NUM_EPOCHS = 50  # Probably never need so much, 10-20 is probably enough
-MAX_NUM_EPOCHS = 15
+MAX_NUM_EPOCHS = 25
 # MAX_NUM_EPOCHS = 10
 
-# Tried before [100, 1000], [500], [50, 100, 250, 500],
+# Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250]
+# Current conclusion - 100 seems the best, but 50-250 all give good results
 #batch_sizes = [1, 100, 1000, 10000, 1000000]
 #batch_sizes = [1, 1000, 1000000]
-batch_sizes = [50, 75, 100, 170, 250]
+batch_sizes = [150]
 
 ## Tried before [10, 64], [50],
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 # hidden_widths = [1, 64, 128]
-hidden_widths = [50]
+hidden_widths = [25, 50, 75]
 
 # Tried [3, 4, 5, 6],
 #nums_layers = [2, 3, 4, 5, 6, 7, 10]
@@ -157,8 +159,10 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
     actual_num_epochs = len(history.history["val_accuracy"])
 
     out_dic['Accuracy Validate Best'] = max(history.history['val_accuracy']).round(4)
+    out_dic['Accuracies Product'] = round(out_dic['Accuracy Validate Best'] * max(history.history["accuracy"]), 4)
     out_dic['Train time'] = round(end - start, 3)
     out_dic['Accuracy Validate per Time'] = round(out_dic['Accuracy Validate Best'] / out_dic['Train time'], 4)
+    out_dic['Accuracies Product per Time'] = round(out_dic['Accuracies Product'] / out_dic['Train time'], 4)
     out_dic['Num epochs'] = actual_num_epochs
     out_dic['Average epoch time'] = round((end - start) / actual_num_epochs, 4)
     out_dic['Accuracy Validate Last'] = history.history["val_accuracy"][-1].round(4)
@@ -176,6 +180,8 @@ def do_numerous_loops():
     quickest = {'Train time': 10000}
     best_accuracy = {'Accuracy Validate Best': 0.001}
     efficient = {'Accuracy Validate per Time': 0.001/10000}
+    product = {'Accuracies Product': 0.001}
+    efficient_product = {'Accuracies Product per Time': 0.001}
 
     num_model_trainings = 0
     time_run_started = timer()
@@ -208,11 +214,18 @@ def do_numerous_loops():
                         best_accuracy = result
                     if result['Accuracy Validate per Time'] > efficient['Accuracy Validate per Time']:
                         efficient = result
+                    if result['Accuracies Product'] > product['Accuracies Product']:
+                        product = result
+                    if result['Accuracies Product per Time'] > efficient_product['Accuracies Product per Time']:
+                        efficient_product = result
 
                     print(f'CURRENT:       {result}')
                     print(f'QUICKEST:      {quickest}')
                     print(f'BEST ACCURACY: {best_accuracy}')
                     print(f'EFFICIENT:     {efficient}')
+                    print(f'PROD ACCURACY: {product}')
+                    print(f'EFFICIENT PROD:{efficient_product}')
+
 
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++')
     print(f'Total number of models trained: {num_model_trainings}')
@@ -247,11 +260,16 @@ def do_numerous_loops():
     best_accuracy_with_type.update(best_accuracy)
     efficient_with_type = {'Type': 'EFFICIENT'}
     efficient_with_type.update(efficient)
+    product_with_type = {'Type': 'PROD ACCURACY'}
+    product_with_type.update(product)
+    efficient_product_with_type = {'Type': 'EFFICIENT PROD'}
+    efficient_product_with_type.update(efficient_product)
 
     pf = pd.DataFrame([quickest_with_type, best_accuracy_with_type, efficient_with_type])
     print(f'BEST RESULTS:')
     print(pf.to_string())
     pf.to_excel("output\\best.xlsx")
+
 
 mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 do_numerous_loops()
