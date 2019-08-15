@@ -293,9 +293,17 @@ def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
 
 
 #do_numerous_loops()
+"""
 single_model_with_acquire_prepare_data_num_loops(5,
                                                  {'Max num epochs': 25,
                                                   'Batch size': 200,
+                                                  'Num layers': 4,
+                                                  'Hidden funcs': ('tanh', 'relu'),
+                                                  'Hidden width': 100})
+"""
+single_model_with_acquire_prepare_data_num_loops(3,
+                                                 {'Max num epochs': 1000,
+                                                  'Batch size': 70000,
                                                   'Num layers': 4,
                                                   'Hidden funcs': ('tanh', 'relu'),
                                                   'Hidden width': 100})

@@ -233,3 +233,9 @@
 - Need to check with endless iterations, but batch size largest.  Possibly same or better result, but longer?
 - Need to check with different seed to make sure what was chosen was not luck for the specific split
 - Need to check without batch sizes at all but with endless epochs to see if always get better and consistent results
+
+# Conclusions 9 - running single function that was found to be the best numerous times with different seeds to check if it's consistent
+### Details
+- Ran 5 times, Accuracies Product 4/5 .995 and above, but 1/5 .98, with 1 being .9993
+### Conclusions going forward:
+- Check if it's a matter of batching, and whether it's better perhaps not to batch to get best results
