@@ -11,9 +11,9 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
-- Need to check with different seeds and numerous times to make sure what was chosen was not luck for the specific split
-- Need to check with endless iterations, but batch size largest.  Possibly same or better result, but longer?
-- Need to check without batch sizes at all but with endless epochs to see if always get better and consistent results
+- Try with even slower StopFunction (0.0001 and not 0.001 delta that was used till now)
+- Need to check again if reading the data, or preparing the data causes the fluctuation between results
+- Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time
 - Give different learning rates
 - Write comments
 - Try extreme values to see what effect they have
@@ -138,8 +138,8 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
     model = prepare_model(in_dic)
 
     earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
-                                                     min_delta=ACCURACY_IMPROVEMENT_DELTA,
-                                                     patience=ACCURACY_IMPROVEMENT_PATIENCE,
+                                                     min_delta=in_dic['Accuracy improvement delta'],
+                                                     patience=in_dic['Accuracy improvement patience'],
                                                      restore_best_weights=True)
 
     start = timer()
@@ -166,6 +166,8 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
 def do_numerous_loops():
     results = []
     in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
+              'Accuracy improvement delta': ACCURACY_IMPROVEMENT_DELTA,
+              'Accuracy improvement patience': ACCURACY_IMPROVEMENT_PATIENCE,
               'Shuffle seed': 100}
 
     mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
@@ -238,8 +240,8 @@ def do_numerous_loops():
         'Total time minutes': round(time_running_sec / 60, 1),
         'Total time hours': round(time_running_sec / 60 / 60, 2),
         'Seconds per model': round(time_running_sec / num_model_trainings),
-        'Accuracy improve delta': ACCURACY_IMPROVEMENT_DELTA,
-        'Accuracy improve patience': ACCURACY_IMPROVEMENT_PATIENCE,
+        'Accuracy improve delta': in_dic['Accuracy improvement delta'],
+        'Accuracy improve patience': in_dic['Accuracy improvement patience'],
         'Max Num Epochs': in_dic['Max num epochs'],
         'Batch sizes': batch_sizes,
         'Hidden Widths': hidden_widths,
@@ -293,17 +295,11 @@ def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
 
 
 #do_numerous_loops()
-"""
 single_model_with_acquire_prepare_data_num_loops(5,
-                                                 {'Max num epochs': 25,
+                                                 {'Accuracy improvement delta': 0.0001,
+                                                  'Accuracy improvement patience': 3,
+                                                  'Max num epochs': 100,
                                                   'Batch size': 200,
-                                                  'Num layers': 4,
-                                                  'Hidden funcs': ('tanh', 'relu'),
-                                                  'Hidden width': 100})
-"""
-single_model_with_acquire_prepare_data_num_loops(3,
-                                                 {'Max num epochs': 1000,
-                                                  'Batch size': 70000,
                                                   'Num layers': 4,
                                                   'Hidden funcs': ('tanh', 'relu'),
                                                   'Hidden width': 100})
