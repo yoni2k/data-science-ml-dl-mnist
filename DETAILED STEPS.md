@@ -261,3 +261,11 @@
 - Accuracies Product - one of them was 99.99! - which means making a mistake on 7 out of 70,000 results
 ### Conclusions going forward:
 - Previous conclusion: Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time
+
+# Conclusions 13 - working with batch number 500 and not 200 as till now - see if makes time worse/better, and if results stay the same
+- Accuracies Product - 4/5 with .9999, and one with .9967 (and even that one with Validate Best of .9988 (.999 rounded) and Accuracy Train .9979 (rounded .998)
+- Accuracies Validate - 4/5 with 1.0000! and Accuracy Train .9998 or .9999 (rounded to 1.000)
+- Number of epochs - 22 to 33, for 4 better models around 32 on average
+- Time - 3 minutes for the worse model, and ~3.5 minutes for the better ones - worse it to get a bit higher accuracy
+### Conclusions going forward:
+- Try with batch size 1000

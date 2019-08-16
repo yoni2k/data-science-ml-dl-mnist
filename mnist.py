@@ -11,7 +11,7 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
-- Try with much larger batches than 100 or 150 used till now - perhaps could have better results without paying too much in time
+- Make sure the function works also when ran regularly and not with given dic
 - Give different learning rates
 - Write comments
 - Try extreme values to see what effect they have
@@ -161,12 +161,23 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
     return out_dic
 
 
-def do_numerous_loops():
+def do_numerous_loops(num_loops=1, given_dic=None):
     results = []
-    in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
-              'Accuracy improvement delta': ACCURACY_IMPROVEMENT_DELTA,
-              'Accuracy improvement patience': ACCURACY_IMPROVEMENT_PATIENCE,
-              'Shuffle seed': 100}
+    if given_dic:
+        in_dic = given_dic
+        local_batch_sizes = [in_dic['Batch size']]
+        local_hidden_widths = [in_dic['Hidden width']]
+        local_nums_layers = [in_dic['Num layers']]
+        local_functions = [in_dic['Hidden funcs']]
+    else:
+        in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
+                  'Accuracy improvement delta': ACCURACY_IMPROVEMENT_DELTA,
+                  'Accuracy improvement patience': ACCURACY_IMPROVEMENT_PATIENCE,
+                  'Shuffle seed': 100}
+        local_batch_sizes = batch_sizes
+        local_hidden_widths = hidden_widths
+        local_nums_layers = nums_layers
+        local_functions = functions
 
     mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 
@@ -180,52 +191,70 @@ def do_numerous_loops():
     num_model_trainings = 0
     time_run_started = timer()
 
-    for batch_size in batch_sizes:
+    for batch_size in local_batch_sizes:
         in_dic['Batch size'] = batch_size
-        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
-                                                                          num_train_valid_examples,
-                                                                          num_test_examples,
-                                                                          batch_size,
-                                                                          in_dic['Shuffle seed'])
-        for num_layers in nums_layers:
+        if num_loops == 1:
+            # to save time not to do it every time if there is only 1 loop
+            in_dic['Shuffle seed'] = 1
+            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                                                              num_train_valid_examples,
+                                                                              num_test_examples,
+                                                                              batch_size,
+                                                                              in_dic['Shuffle seed'])
+
+        for num_layers in local_nums_layers:
             in_dic['Num layers'] = num_layers
-            for hidden_funcs in itertools.product(functions, repeat=(num_layers - 2)):
+            if not given_dic:
+                funcs_product = itertools.product(local_functions, repeat=(num_layers - 2))
+            else:
+                funcs_product = in_dic['Hidden funcs']
+            for hidden_funcs in funcs_product:
                 in_dic['Hidden funcs'] = hidden_funcs
-                for hidden_width in hidden_widths:
-                    num_model_trainings += 1
-                    time_running_sec = timer() - time_run_started
-                    print(f'Model {num_model_trainings}, '
-                          f'total time min: {round(time_running_sec / 60, 1)}, '
-                          f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
-                          f'seconds per model: {round(time_running_sec / num_model_trainings)} '
-                          f'====================================')
+                for hidden_width in local_hidden_widths:
                     in_dic['Hidden width'] = hidden_width
-                    out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
-                    result = in_dic.copy()
-                    result.update(out_dic)
-                    results.append(result)
+                    num_model_trainings += 1
+                    for loop in range(num_loops):
+                        if num_loops > 1:
+                            # if more than 1 loops, to allow for different seed, need to prepare data every time
+                            in_dic['Shuffle seed'] = loop
+                            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                                                                              num_train_valid_examples,
+                                                                                              num_test_examples,
+                                                                                              batch_size,
+                                                                                              in_dic['Shuffle seed'])
 
-                    if result['Train time'] < quickest['Train time']:
-                        quickest = result
-                    if result['Accuracy Validate Best'] > best_accuracy['Accuracy Validate Best']:
-                        best_accuracy = result
-                    if result['Accuracy Validate per Time'] > efficient['Accuracy Validate per Time']:
-                        efficient = result
-                    if result['Accuracies Product'] > product['Accuracies Product']:
-                        product = result
-                    if result['Accuracies Product per Time'] > efficient_product['Accuracies Product per Time']:
-                        efficient_product = result
+                        time_running_sec = timer() - time_run_started
+                        print(f'Model {num_model_trainings}, loop {loop}/{num_loops}, '
+                              f'total time min: {round(time_running_sec / 60, 1)}, '
+                              f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
+                              f'seconds per model: {round(time_running_sec / num_model_trainings)} '
+                              f'====================================')
+                        out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+                        result = in_dic.copy()
+                        result.update(out_dic)
+                        results.append(result)
 
-                    print(f'CURRENT:       {result}')
-                    print(f'QUICKEST:      {quickest}')
-                    print(f'BEST ACCURACY: {best_accuracy}')
-                    print(f'EFFICIENT:     {efficient}')
-                    print(f'PROD ACCURACY: {product}')
-                    print(f'EFFICIENT PROD:{efficient_product}')
+                        if result['Train time'] < quickest['Train time']:
+                            quickest = result
+                        if result['Accuracy Validate Best'] > best_accuracy['Accuracy Validate Best']:
+                            best_accuracy = result
+                        if result['Accuracy Validate per Time'] > efficient['Accuracy Validate per Time']:
+                            efficient = result
+                        if result['Accuracies Product'] > product['Accuracies Product']:
+                            product = result
+                        if result['Accuracies Product per Time'] > efficient_product['Accuracies Product per Time']:
+                            efficient_product = result
+
+                        print(f'CURRENT:       {result}')
+                        print(f'QUICKEST:      {quickest}')
+                        print(f'BEST ACCURACY: {best_accuracy}')
+                        print(f'EFFICIENT:     {efficient}')
+                        print(f'PROD ACCURACY: {product}')
+                        print(f'EFFICIENT PROD:{efficient_product}')
 
 
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++')
-    print(f'Total number of models trained: {num_model_trainings}')
+    print(f'Total number of models trained: {num_model_trainings} with {num_loops} per model')
     pf = pd.DataFrame(results)
     print(f'ALL RESULTS:')
     print(pf.to_string())
@@ -235,16 +264,17 @@ def do_numerous_loops():
 
     hyperparams = {
         'Num Model Trainings': num_model_trainings,
+        'Num Loops per model': num_loops,
         'Total time minutes': round(time_running_sec / 60, 1),
         'Total time hours': round(time_running_sec / 60 / 60, 2),
         'Seconds per model': round(time_running_sec / num_model_trainings),
         'Accuracy improve delta': in_dic['Accuracy improvement delta'],
         'Accuracy improve patience': in_dic['Accuracy improvement patience'],
         'Max Num Epochs': in_dic['Max num epochs'],
-        'Batch sizes': batch_sizes,
-        'Hidden Widths': hidden_widths,
-        'Nums layers': nums_layers,
-        'Functions': functions}
+        'Batch sizes': local_batch_sizes,
+        'Hidden Widths': local_hidden_widths,
+        'Nums layers': local_nums_layers,
+        'Functions': local_functions}
 
     pf = pd.DataFrame([hyperparams])
     print(f'HYPERPARAMS:')
@@ -268,36 +298,11 @@ def do_numerous_loops():
     pf.to_excel("output\\best.xlsx")
 
 
-def single_model_with_acquire_prepare_data_num_loops(num_loops, in_dic):
-    results = []
-
-    mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
-
-    for loop in range(num_loops):
-        train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
-                                                                          num_train_valid_examples,
-                                                                          num_test_examples,
-                                                                          in_dic['Batch size'],
-                                                                          loop)  #use loop number as shuffle seed
-
-        out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
-        result = in_dic.copy()
-        result.update(out_dic)
-
-        print(f'RESULT: {result}')
-        results.append(result)
-
-    pf = pd.DataFrame(results)
-    print(f'ALL RESULTS:')
-    print(pf.to_string())
-
-
 #do_numerous_loops()
-single_model_with_acquire_prepare_data_num_loops(5,
-                                                 {'Accuracy improvement delta': 0.0001,
-                                                  'Accuracy improvement patience': 3,
-                                                  'Max num epochs': 100,
-                                                  'Batch size': 500,
-                                                  'Num layers': 4,
-                                                  'Hidden funcs': ('tanh', 'relu'),
-                                                  'Hidden width': 100})
+do_numerous_loops(5, {'Accuracy improvement delta': 0.0001,
+                      'Accuracy improvement patience': 3,
+                      'Max num epochs': 100,
+                      'Batch size': 1000,
+                      'Num layers': 4,
+                      'Hidden funcs': ('tanh', 'relu'),
+                      'Hidden width': 100})
