@@ -274,3 +274,9 @@
 - Good but not as good results - accuracies products around .999 but not .9999 as before
 ### Conclusions going forward:
 - Try with 500, and then go back to 200 if 500 also not as good
+
+# Conclusions 15 - batch size of 500 instead of 200 done before
+- Good but not as good results - accuracies products around .999 but not .9999 as before
+- Times - around same as 200
+### Conclusions going forward:
+- Go back to 200 batch size
