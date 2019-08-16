@@ -269,3 +269,8 @@
 - Time - 3 minutes for the worse model, and ~3.5 minutes for the better ones - worse it to get a bit higher accuracy
 ### Conclusions going forward:
 - Try with batch size 1000
+
+# Conclusions 14 - batch size of 1000 instead of 500 done before
+- Good but not as good results - accuracies products around .999 but not .9999 as before
+### Conclusions going forward:
+- Try with 500, and then go back to 200 if 500 also not as good

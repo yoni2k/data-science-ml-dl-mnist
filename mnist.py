@@ -207,13 +207,14 @@ def do_numerous_loops(num_loops=1, given_dic=None):
             if not given_dic:
                 funcs_product = itertools.product(local_functions, repeat=(num_layers - 2))
             else:
-                funcs_product = in_dic['Hidden funcs']
+                funcs_product = [in_dic['Hidden funcs']]
+            print(f'funcs_product: {funcs_product}')
             for hidden_funcs in funcs_product:
                 in_dic['Hidden funcs'] = hidden_funcs
                 for hidden_width in local_hidden_widths:
                     in_dic['Hidden width'] = hidden_width
                     num_model_trainings += 1
-                    for loop in range(num_loops):
+                    for loop in range(1, num_loops+1):
                         if num_loops > 1:
                             # if more than 1 loops, to allow for different seed, need to prepare data every time
                             in_dic['Shuffle seed'] = loop
@@ -298,11 +299,13 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-#do_numerous_loops()
+# do_numerous_loops()
+# """
 do_numerous_loops(5, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 100,
-                      'Batch size': 1000,
+                      'Batch size': 500,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100})
+# """
