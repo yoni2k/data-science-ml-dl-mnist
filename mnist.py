@@ -328,5 +328,5 @@ do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,
-                      'Learning rate': 0.002})
+                      'Learning rate': 0.0001})
 # """
