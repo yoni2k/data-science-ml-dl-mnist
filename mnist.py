@@ -55,6 +55,9 @@ nums_layers = [4]
 functions = ['relu', 'sigmoid', 'tanh']
 #functions = ['relu']
 
+learning_rates = [0.0001, 0.001, 0.01]  # default in tf.keras.optimizers.Adam is 0.001
+
+
 def acquire_data():
     mnist_dataset, mnist_info = tfds.load(name='mnist', with_info=True, as_supervised=True)
 
@@ -126,7 +129,9 @@ def prepare_model(in_dic):
     # Add output layer
     model.add(tf.keras.layers.Dense(output_size, activation='softmax'))
 
-    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=in_dic['Learning rate']),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
     return model
 
 
@@ -169,6 +174,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         local_hidden_widths = [in_dic['Hidden width']]
         local_nums_layers = [in_dic['Num layers']]
         local_functions = [in_dic['Hidden funcs']]
+        local_learning_rates = [in_dic['Learning rate']]
     else:
         in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
                   'Accuracy improvement delta': ACCURACY_IMPROVEMENT_DELTA,
@@ -178,6 +184,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         local_hidden_widths = hidden_widths
         local_nums_layers = nums_layers
         local_functions = functions
+        local_learning_rates = learning_rates
 
     mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 
@@ -213,45 +220,47 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                 in_dic['Hidden funcs'] = hidden_funcs
                 for hidden_width in local_hidden_widths:
                     in_dic['Hidden width'] = hidden_width
-                    num_model_trainings += 1
-                    for loop in range(1, num_loops+1):
-                        if num_loops > 1:
-                            # if more than 1 loops, to allow for different seed, need to prepare data every time
-                            in_dic['Shuffle seed'] = loop
-                            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
-                                                                                              num_train_valid_examples,
-                                                                                              num_test_examples,
-                                                                                              batch_size,
-                                                                                              in_dic['Shuffle seed'])
+                    for learning_rate in local_learning_rates:
+                        in_dic['Learning rate'] = learning_rate
+                        num_model_trainings += 1
+                        for loop in range(1, num_loops+1):
+                            if num_loops > 1:
+                                # if more than 1 loops, to allow for different seed, need to prepare data every time
+                                in_dic['Shuffle seed'] = loop
+                                train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                                                                                  num_train_valid_examples,
+                                                                                                  num_test_examples,
+                                                                                                  batch_size,
+                                                                                                  in_dic['Shuffle seed'])
 
-                        time_running_sec = timer() - time_run_started
-                        print(f'Model {num_model_trainings}, loop {loop}/{num_loops}, '
-                              f'total time min: {round(time_running_sec / 60, 1)}, '
-                              f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
-                              f'seconds per model: {round(time_running_sec / num_model_trainings)} '
-                              f'====================================')
-                        out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
-                        result = in_dic.copy()
-                        result.update(out_dic)
-                        results.append(result)
+                            time_running_sec = timer() - time_run_started
+                            print(f'Model {num_model_trainings}, loop {loop}/{num_loops}, '
+                                  f'total time min: {round(time_running_sec / 60, 1)}, '
+                                  f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
+                                  f'seconds per model: {round(time_running_sec / num_model_trainings)} '
+                                  f'====================================')
+                            out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+                            result = in_dic.copy()
+                            result.update(out_dic)
+                            results.append(result)
 
-                        if result['Train time'] < quickest['Train time']:
-                            quickest = result
-                        if result['Accuracy Validate Best'] > best_accuracy['Accuracy Validate Best']:
-                            best_accuracy = result
-                        if result['Accuracy Validate per Time'] > efficient['Accuracy Validate per Time']:
-                            efficient = result
-                        if result['Accuracies Product'] > product['Accuracies Product']:
-                            product = result
-                        if result['Accuracies Product per Time'] > efficient_product['Accuracies Product per Time']:
-                            efficient_product = result
+                            if result['Train time'] < quickest['Train time']:
+                                quickest = result
+                            if result['Accuracy Validate Best'] > best_accuracy['Accuracy Validate Best']:
+                                best_accuracy = result
+                            if result['Accuracy Validate per Time'] > efficient['Accuracy Validate per Time']:
+                                efficient = result
+                            if result['Accuracies Product'] > product['Accuracies Product']:
+                                product = result
+                            if result['Accuracies Product per Time'] > efficient_product['Accuracies Product per Time']:
+                                efficient_product = result
 
-                        print(f'CURRENT:       {result}')
-                        print(f'QUICKEST:      {quickest}')
-                        print(f'BEST ACCURACY: {best_accuracy}')
-                        print(f'EFFICIENT:     {efficient}')
-                        print(f'PROD ACCURACY: {product}')
-                        print(f'EFFICIENT PROD:{efficient_product}')
+                            print(f'CURRENT:       {result}')
+                            print(f'QUICKEST:      {quickest}')
+                            print(f'BEST ACCURACY: {best_accuracy}')
+                            print(f'EFFICIENT:     {efficient}')
+                            print(f'PROD ACCURACY: {product}')
+                            print(f'EFFICIENT PROD:{efficient_product}')
 
 
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++')
@@ -275,7 +284,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         'Batch sizes': local_batch_sizes,
         'Hidden Widths': local_hidden_widths,
         'Nums layers': local_nums_layers,
-        'Functions': local_functions}
+        'Functions': local_functions,
+        'Learning rates': local_learning_rates}
 
     pf = pd.DataFrame([hyperparams])
     print(f'HYPERPARAMS:')
@@ -301,11 +311,12 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
 # do_numerous_loops()
 # """
-do_numerous_loops(5, {'Accuracy improvement delta': 0.0001,
+do_numerous_loops(1, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 100,
                       'Batch size': 200,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
-                      'Hidden width': 100})
+                      'Hidden width': 100,
+                      'Learning rate': 0.0001})
 # """
