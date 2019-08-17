@@ -281,6 +281,7 @@
 ### Conclusions going forward:
 - Go back to 200 batch size
 
+[
 # Conclusions 16 - adding different learning rates.
 Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Took longer - 400 seconds (vs 200-300 with 0.001)
@@ -288,12 +289,13 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Accuracy was not great - product .9815 (stop function stops before reached the best result?)
 ### Conclusions going forward:
 - Try with larger rate to see if will give same results as 0.001 but quicker.  Try 0.02 as suggested in the lecture
+]
 
 # Conclusions 17 - Learning rate 0.02
-- Results - accuracies are not good - .88%
+- Results - accuracies are not good - product .92%
 ### Conclusions going forward:
 - Go back to much lower learning rates - try 0.005
-
+[
 # Conclusions 18 - Learning rate 0.005
 - Results - still too fast - accuracy bad: .96
 ### Conclusions going forward:
@@ -308,3 +310,4 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Results - realized that now the results are not as good as 99.99% saw before, but usually around 99.5-99.9%
 ### Conclusions going forward:
 - Leave learning rate at 0.001
+] 

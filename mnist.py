@@ -11,11 +11,21 @@ Number of hidden layers: 2
 Activation function last layer: softmax
 
 TODOs:
+- After reading solutions:
+  - try again learning rates - was touching the wrong thing
+  - try with much larger batch - supposed to be slower but more accurate
+  - try with much larger hidden width - supposed to give even better results, but much slower
+  - Add testing
 - Make sure the function works also when ran regularly and not with given dic
 - Give different learning rates
 - Write comments
 - Try extreme values to see what effect they have
 - TODOs
+
+Questions to ask:
+- How come even when seeding getting different results?
+- Different functions, when does each one make sense?
+-
 """
 
 """ Imports """
@@ -311,12 +321,12 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
 # do_numerous_loops()
 # """
-do_numerous_loops(1, {'Accuracy improvement delta': 0.001,
+do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
-                      'Max num epochs': 100,
+                      'Max num epochs': 1000,
                       'Batch size': 200,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,
-                      'Learning rate': 0.0001})
+                      'Learning rate': 0.005})
 # """
