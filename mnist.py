@@ -311,7 +311,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
 # do_numerous_loops()
 # """
-do_numerous_loops(1, {'Accuracy improvement delta': 0.0001,
+do_numerous_loops(1, {'Accuracy improvement delta': 0.005,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 100,
                       'Batch size': 200,
