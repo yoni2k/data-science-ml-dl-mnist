@@ -12,10 +12,8 @@ Activation function last layer: softmax
 
 TODOs:
 - After reading solutions:
-  - try again learning rates - was touching the wrong thing
-  - try with much larger batch - supposed to be slower but more accurate
+  - Add test function
   - try with much larger hidden width - supposed to give even better results, but much slower
-  - Add testing
 - Make sure the function works also when ran regularly and not with given dic
 - Write comments
 - Try extreme values to see what effect they have
@@ -26,7 +24,7 @@ TODOs:
 Questions to ask:
 - How come even when seeding getting different results?
 - Different functions, when does each one make sense?
--
+- Test - how come gives different results every time
 """
 
 """ Imports """
@@ -146,7 +144,7 @@ def prepare_model(in_dic):
     return model
 
 
-def single_model(train_data, valid_inputs, valid_targets, in_dic):
+def single_model(train_data, valid_inputs, valid_targets, test_data, in_dic):
     out_dic = {}
 
     model = prepare_model(in_dic)
@@ -161,10 +159,13 @@ def single_model(train_data, valid_inputs, valid_targets, in_dic):
                         validation_data=(valid_inputs, valid_targets), verbose=2)
     end = timer()
 
+    test_loss, test_accuracy = model.evaluate(test_data)
+
     actual_num_epochs = len(history.history["val_accuracy"])
 
     out_dic['Accuracy Validate Best'] = max(history.history['val_accuracy']).round(4)
     out_dic['Accuracies Product'] = round(out_dic['Accuracy Validate Best'] * max(history.history["accuracy"]), 4)
+    out_dic['Accuracy Test'] = round(test_accuracy, 4)
     out_dic['Train time'] = round(end - start, 3)
     out_dic['Accuracy Validate per Time'] = round(out_dic['Accuracy Validate Best'] / out_dic['Train time'], 4)
     out_dic['Accuracies Product per Time'] = round(out_dic['Accuracies Product'] / out_dic['Train time'], 4)
@@ -214,7 +215,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         if num_loops == 1:
             # to save time not to do it every time if there is only 1 loop
             in_dic['Shuffle seed'] = 1
-            train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+            train_data, valid_inputs, valid_targets, test_data = prepare_data(mnist_data,
                                                                               num_train_valid_examples,
                                                                               num_test_examples,
                                                                               batch_size,
@@ -238,7 +239,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                             if num_loops > 1:
                                 # if more than 1 loops, to allow for different seed, need to prepare data every time
                                 in_dic['Shuffle seed'] = loop
-                                train_data, valid_inputs, valid_targets, test_test = prepare_data(mnist_data,
+                                train_data, valid_inputs, valid_targets, test_data = prepare_data(mnist_data,
                                                                                                   num_train_valid_examples,
                                                                                                   num_test_examples,
                                                                                                   batch_size,
@@ -250,7 +251,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                                   f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
                                   f'seconds per model: {round(time_running_sec / num_model_trainings)} '
                                   f'====================================')
-                            out_dic = single_model(train_data, valid_inputs, valid_targets, in_dic)
+                            out_dic = single_model(train_data, valid_inputs, valid_targets, test_data, in_dic)
                             result = in_dic.copy()
                             result.update(out_dic)
                             results.append(result)
@@ -325,7 +326,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 1000,
-                      'Batch size': 200,
+                      'Batch size': 400, #200,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,

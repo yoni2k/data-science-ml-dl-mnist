@@ -305,3 +305,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Time took - slightly better than default learning rate 0.001
 ### Conclusions going forward:
 - Go back to much lower learning rates - go back to 0.001
+
+# Conclusions 20 - Large batch size (10,000)
+- Much slower (700 sec instead of 300)
+- Results not as good (accuracy product ~ .97-.985 instead of 99.5)
+### Conclusions going forward:
+- Try with batch size 400 (twice as much as current 200)
+
