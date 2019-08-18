@@ -17,10 +17,11 @@ TODOs:
   - try with much larger hidden width - supposed to give even better results, but much slower
   - Add testing
 - Make sure the function works also when ran regularly and not with given dic
-- Give different learning rates
 - Write comments
 - Try extreme values to see what effect they have
 - TODOs
+- Write general README
+- Commit also Jupyter notebook with solution
 
 Questions to ask:
 - How come even when seeding getting different results?
@@ -328,5 +329,5 @@ do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,
-                      'Learning rate': 0.0001})
+                      'Learning rate': 0.001})
 # """
