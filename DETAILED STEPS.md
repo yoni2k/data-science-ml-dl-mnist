@@ -312,3 +312,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Try with batch size 400 (twice as much as current 200)
 
+# Conclusions 21 - Larger batch size (400 instead of 200)
+- Same or faster (200-350 sec instead of 300-400)
+- Accuracies same or better (accuracy product ~ .9995+ instead of .9985-.9995)
+### Conclusions going forward:
+- Consider changing to this later, try 100 first
+- 
+

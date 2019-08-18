@@ -326,7 +326,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 1000,
-                      'Batch size': 400, #200,
+                      'Batch size': 100, #200,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,
