@@ -324,3 +324,13 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Change to 300 
 
+# Conclusions 23 - Adding testing - 5 loops of the same
+- Added testing - it gives lower results than expected - .97-.98, while validation and train accuracy is close to .9999
+- Based on that, stopped updating the weights to best validity, and allowed to take last weights - simpler, and will allow to find best accuracy and patience
+- Test accuracy: best .979, range .977-.979
+- Product accuracy: best: .979, range .975-.979
+- Validate and train accuracies: All .999 and up
+- Train time - 205 seconds average, 170-230
+- Num epochs 23-26 
+### Conclusions going forward:
+- Need another cycle with a lot of different parameters
