@@ -335,7 +335,7 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Need another cycle with a lot of different parameters
 
-# Conclusions 24 - Depth 500 (instead 100)
+# Conclusions 24 - Width 500 (instead 100)
 - Test accuracy: best .981, range .977-.981 (same or better than 100)
 - Product accuracy: best: .976, range .966-.976 (same or worse than 100)
 - Validate and train accuracies: worse, .997-.998 (worse than 100)
@@ -344,7 +344,7 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - 500 doesn't seem to be better, but can't be ruled out altogether. Try with 200
 
-# Conclusions 25 - Depth 200 (instead 100)
+# Conclusions 25 - Width 200 (instead 100)
 - Test accuracy: best .983, range .977-.983 (probably better than 100)
 - Product accuracy: best: .983, range .968-.983 (same or better than 100)
 - Validate and train accuracies: worse, .997-.998 (worse than 100)
