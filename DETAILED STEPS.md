@@ -343,3 +343,12 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Num epochs 13-16 - much less than 23-26 of 100
 ### Conclusions going forward:
 - 500 doesn't seem to be better, but can't be ruled out altogether. Try with 200
+
+# Conclusions 25 - Depth 200 (instead 100)
+- Test accuracy: best .983, range .977-.983 (probably better than 100)
+- Product accuracy: best: .983, range .968-.983 (same or better than 100)
+- Validate and train accuracies: worse, .997-.998 (worse than 100)
+- Train time - 210 seconds average (a bit more than 100)
+- Num epochs 20-26 - less than 23-26 of 100
+### Conclusions going forward:
+- Seems makes test better while train/validate worse. Leave 200

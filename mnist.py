@@ -50,8 +50,9 @@ MAX_NUM_EPOCHS = 25
 # Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
 batch_sizes = [200, 300]
 
-## Tried before [10, 64], [50], [25, 50, 75]
+## Tried before [10, 64], [50], [25, 50, 75], [500], [200]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
+# Later conclusion: 500 seems too much - worse results and
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 hidden_widths = [100, 120]
 
@@ -336,6 +337,6 @@ do_numerous_loops(5, {'Accuracy improvement delta': 0.0001,
                       'Batch size': 300,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
-                      'Hidden width': 500,  # 100
+                      'Hidden width': 200,
                       'Learning rate': 0.001})
 # """
