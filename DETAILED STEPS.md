@@ -317,5 +317,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Accuracies same or better (accuracy product ~ .9995+ instead of .9985-.9995)
 ### Conclusions going forward:
 - Consider changing to this later, try 100 first
-- 
+
+# Conclusions 22 - Smaller batch size (100 instead of 200)
+- Faster (100-200 sec instead of 300-400)
+- Accuracies worse (accuracy product ~ .995+ instead of .9985-.9995)
+### Conclusions going forward:
+- Change to 300 
 

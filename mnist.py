@@ -48,7 +48,8 @@ MAX_NUM_EPOCHS = 25
 
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
-batch_sizes = [200, 220]
+# Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
+batch_sizes = [200, 300]
 
 ## Tried before [10, 64], [50], [25, 50, 75]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
@@ -326,7 +327,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 do_numerous_loops(3, {'Accuracy improvement delta': 0.0001,
                       'Accuracy improvement patience': 3,
                       'Max num epochs': 1000,
-                      'Batch size': 100, #200,
+                      'Batch size': 300,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 100,
