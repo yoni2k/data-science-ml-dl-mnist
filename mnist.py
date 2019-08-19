@@ -160,11 +160,15 @@ def single_model(train_data, valid_inputs, valid_targets, test_data, in_dic):
 
     model = prepare_model(in_dic)
 
+    """
     earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                                      min_delta=in_dic['Accuracy improvement delta'],
                                                      patience=in_dic['Accuracy improvement patience'],
                                                      restore_best_weights=False)
-
+    """
+    earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                     patience=3,
+                                                     restore_best_weights=False)
     start = timer()
     history = model.fit(train_data, epochs=in_dic['Max num epochs'], callbacks=[earlyCallback],
                         validation_data=(valid_inputs, valid_targets), verbose=2)
@@ -370,14 +374,14 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-do_numerous_loops(1)
-"""
-do_numerous_loops(2, {'Accuracy improvement delta': 0.0001,
-                      'Accuracy improvement patience': 3,
+# do_numerous_loops(1)
+# """
+do_numerous_loops(3, {'Accuracy improvement delta': 0.00001,
+                      'Accuracy improvement patience': 10,
                       'Max num epochs': 1000,
                       'Batch size': 300,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 200,
                       'Learning rate': 0.001})
-"""
+# """

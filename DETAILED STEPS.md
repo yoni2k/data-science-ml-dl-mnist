@@ -359,3 +359,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - However, that could be because our StopFunction is still too strict
 ### Conclusions going forward:
 - Remove for now softmax, work on making the StopFunction better, then try again with softmax
+
+# Conclusions 27 - no limit stop function
+- Goal: check how to improve stop function - let it run for longer
+- val_accuracy keeps on being the same, while val_loss and loss are still improving
+### Conclusions going forward:
+- Start using val_loss as the stop function.  Need to play with patience.  Does it depend also on how fast we are learning? For example smaller batch size or larger learning rate = need to wait less to stop
+- Try with var_loss that's any, and with patience 3
