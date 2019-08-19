@@ -58,7 +58,7 @@ improve_restore_best_weights_values = [True]
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200], [400], [300]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
 # Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
-batch_sizes = [300]
+batch_sizes = [200, 300, 400]
 # batch_sizes = [200, 300, 400]
 
 ## Tried before [10, 64], [50], [25, 50, 75], [500], [200]
@@ -66,15 +66,15 @@ batch_sizes = [300]
 # Later conclusion: 500 seems too much - worse results and slower
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 #hidden_widths = [100, 200, 300]
-hidden_widths = [200]
+hidden_widths = [200, 300]
 
 # Tried [3, 4, 5, 6], [5], [4]
 # Current conclusion - 4 layers seems enough, although with 5 layers get similar results (and sometimes takes longer)
 #nums_layers = [2, 3, 4, 5, 6, 10]
 nums_layers = [4]
 
-functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-# functions = ['relu', 'sigmoid', 'tanh']
+# functions = ['sigmoid', 'tanh', 'relu', 'softmax']
+functions = ['relu', 'sigmoid', 'tanh']
 # functions = ['relu','tanh']
 
 # learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
@@ -356,8 +356,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-# do_numerous_loops(1)
-
+do_numerous_loops(1)
+"""
 do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Validate loss improvement patience': 10,
                       'Restore best weights': True,
@@ -367,3 +367,4 @@ do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 200,
                       'Learning rate': 0.0001})
+"""
