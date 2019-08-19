@@ -458,3 +458,8 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Play around with configuration  ('tanh', 'tanh', 'sigmoid'), perhaps with smaller learning rate, since seems train and validation loss were large, perhaps with smaller learning rate will do better
 - Invest in different parameters for main combinations of tanh and relu  
+
+# Conclusions 38 - learning rate 0.0005 - see if reaching better results
+- Test accuracy - around .981 - not as good as 0.001
+### Conclusions going forward:
+- Stay with learning rate of 0.001
