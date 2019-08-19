@@ -383,3 +383,12 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - 1/3 stopped too late, when there was a jump to a bigger loss
 ### Conclusions going forward:
 - Need more patience, but need to return to best result
+
+# Conclusions 31 - var_loss 0.00001, patience 10, return to best results
+- Product accuracy slightly better
+- Test accuracy slightly better (2/3 similar .981, but 1 better - .983 instead of .974)
+- Train time longer - 440 instead of 300
+- Validate and train accuracies - all 1, while in patience 5 without returning .999-1
+### Conclusions going forward:
+- More expensive, but gives better results
+- Introduce finding best relevant results

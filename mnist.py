@@ -13,7 +13,6 @@ Activation function last layer: softmax
 TODOs:
 - After reading solutions:
   - try with much larger hidden width - supposed to give even better results, but much slower
-- Make sure the function works also when ran regularly and not with given dic
 - Write comments
 - Try extreme values to see what effect they have
 - TODOs
@@ -48,9 +47,9 @@ MAX_NUM_EPOCHS = 1000
 
 # validate_loss_improve_deltas = [0.0001]
 # validate_loss_improve_deltas = [0.001, 0.0001]
-validate_loss_improve_deltas = [0.00001]
+validate_loss_improve_deltas = [0.0001, 0.00001, 0.000001]
 
-validate_loss_improve_patiences = [5]
+validate_loss_improve_patiences = [4, 5, 6]
 # validate_loss_improve_patiences = [3, 4]
 
 improve_restore_best_weights_values = [False, True]
@@ -73,12 +72,12 @@ hidden_widths = [200]
 #nums_layers = [2, 3, 4, 5, 6, 10]
 nums_layers = [4]
 
-functions = ['sigmoid', 'tanh', 'relu', 'softmax']
+# functions = ['sigmoid', 'tanh', 'relu', 'softmax']
 #functions = ['relu', 'sigmoid', 'tanh']
-#functions = ['relu']
+functions = ['relu','tanh']
 
 # learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
-learning_rates = [0.001]  # default in tf.keras.optimizers.Adam is 0.001
+learning_rates = [0.01, 0.005, 0.001]  # default in tf.keras.optimizers.Adam is 0.001
 
 
 def acquire_data():
@@ -176,19 +175,20 @@ def single_model(train_data, valid_inputs, valid_targets, test_data, in_dic):
 
     actual_num_epochs = len(history.history["val_accuracy"])
 
-    out_dic['Product Accuracy'] = round(history.history['val_accuracy'][-1] *
-                                        history.history['accuracy'][-1] *
-                                        test_accuracy,
-                                        4)
+    out_dic['Product Loss'] = round(history.history['val_loss'][-1] *
+                                    history.history['loss'][-1] *
+                                    test_loss,
+                                    4)
     out_dic['Test Accuracy'] = round(test_accuracy, 4)
-    out_dic['Product / Time'] = round(out_dic['Product Accuracy'] / (end - start), 4)
+    out_dic['Test Loss'] = round(test_loss, 4)
+    out_dic['Train Time'] = round(end - start, 3)
+    out_dic['Product * Time'] = round(out_dic['Product Loss'] * (end - start), 4)
     out_dic['Validate Accuracy'] = history.history["val_accuracy"][-1].round(4)
     out_dic['Train Accuracy'] = history.history["accuracy"][-1].round(4)
-    out_dic['Train Time'] = round(end - start, 3)
+    out_dic['Validate Loss'] = history.history["val_accuracy"][-1].round(4)
+    out_dic['Train Loss'] = history.history["accuracy"][-1].round(4)
     out_dic['Num epochs'] = actual_num_epochs
     out_dic['Average epoch time'] = round((end - start) / actual_num_epochs, 4)
-    out_dic['Accuracy Validate Max'] = max(history.history['val_accuracy']).round(4)
-    out_dic['Accuracy Train Max'] = max(history.history["accuracy"]).round(4)
 
     return out_dic
 
@@ -231,11 +231,10 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     mnist_data, num_train_valid_examples, num_test_examples = acquire_data()
 
     # TODO initiate to better values
-    best_test = {'Test Accuracy': 0.001}
-    best_product = {'Product Accuracy': 0.001}
-    best_product_efficiency = {'Product / Time': 0.001}
-    best_validate = {'Validate Accuracy': 0.001}
-    best_train = {'Train Accuracy': 0.001}
+    best_test_accuracy = {'Test Accuracy': 0.001}
+    best_test_loss = {'Test Loss': 100000}
+    best_product_loss = {'Product Loss': 100000}
+    best_product_efficiency = {'Product * Time': 100000}
 
     num_model_trainings = 0
     time_run_started = timer()
@@ -271,11 +270,10 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                                 for learning_rate in local_learning_rates:
                                     in_dic['Learning rate'] = learning_rate
                                     num_model_trainings += 1
-                                    accum_test = 0
-                                    accum_product = 0
+                                    accum_test_accuracy = 0
+                                    accum_test_loss = 0
+                                    accum_product_loss = 0
                                     accum_product_efficiency = 0
-                                    accum_validate = 0
-                                    accum_train = 0
                                     for loop in range(1, num_loops+1):
                                         if num_loops > 1:
                                             # if more than 1 loops, to allow for different seed, need to prepare data every time
@@ -298,34 +296,29 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                                         results.append(result)
                                         print(f'\nCURRENT: {result}')
 
-                                        accum_test += result['Test Accuracy']
-                                        accum_product += result['Product Accuracy']
-                                        accum_product_efficiency += result['Product / Time']
-                                        accum_validate += result['Validate Accuracy']
-                                        accum_train += result['Train Accuracy']
+                                        accum_test_accuracy += result['Test Accuracy']
+                                        accum_test_loss += result['Test Loss']
+                                        accum_product_loss += result['Product Loss']
+                                        accum_product_efficiency += result['Product * Time']
 
-                                    if (accum_test / num_loops) > best_test['Test Accuracy']:
-                                        best_test = {'Average loop result': round(accum_test / num_loops, 4)}
-                                        best_test.update(result)
-                                    if (accum_product / num_loops) > best_product['Product Accuracy']:
-                                        best_product = {'Average loop result': round(accum_product / num_loops, 4)}
-                                        best_product.update(result)
-                                    if (accum_product_efficiency / num_loops) > best_product_efficiency['Product / Time']:
+                                    if (accum_test_accuracy / num_loops) > best_test_accuracy['Test Accuracy']:
+                                        best_test_accuracy = {'Average loop result': round(accum_test_accuracy / num_loops, 4)}
+                                        best_test_accuracy.update(result)
+                                    if (accum_test_loss / num_loops) < best_test_loss['Test Loss']:
+                                        best_test_loss = {'Average loop result': round(accum_test_loss / num_loops, 4)}
+                                        best_test_loss.update(result)
+                                    if (accum_product_loss / num_loops) < best_product_loss['Product Loss']:
+                                        best_product_loss = {'Average loop result': round(accum_product_loss / num_loops, 4)}
+                                        best_product_loss.update(result)
+                                    if (accum_product_efficiency / num_loops) < best_product_efficiency['Product * Time']:
                                         best_product_efficiency = {'Average loop result': round(accum_product_efficiency / num_loops, 4)}
                                         best_product_efficiency.update(result)
-                                    if (accum_validate / num_loops) > best_validate['Validate Accuracy']:
-                                        best_validate = {'Average loop result': round(accum_validate / num_loops, 4)}
-                                        best_validate.update(result)
-                                    if (accum_train / num_loops) > best_train['Train Accuracy']:
-                                        best_train = {'Average loop result': round(accum_train / num_loops)}
-                                        best_train.update(result)
 
                                     print("Finished all loops +++++++++++++++++++++++++++++++++++++++++++++")
-                                    print(f'BEST TEST ACCURACY:     {best_test}')
-                                    print(f'BEST PRODUCT ACCURACY:  {best_product}')
+                                    print(f'BEST TEST ACCURACY:     {best_test_accuracy}')
+                                    print(f'BEST TEST LOSS:         {best_test_loss}')
+                                    print(f'BEST PRODUCT LOSS:      {best_product_loss}')
                                     print(f'BEST EFFICIENT PRODUCT: {best_product_efficiency}')
-                                    print(f'BEST VALIDATE ACCURACY: {best_validate}')
-                                    print(f'BEST TRAIN ACCURACY:    {best_train}')
 
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++')
     print(f'Total number of models trained: {num_model_trainings} with {num_loops} loops per model')
@@ -357,22 +350,19 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     print(pf.to_string())
     pf.to_excel("output\\hyperparams.xlsx")
 
-    best_test_with_type = {'Type': 'TEST ACCURACY'}
-    best_test_with_type.update(best_test)
-    best_product_with_type = {'Type': 'PROD ACCURACY'}
-    best_product_with_type.update(best_product)
+    best_test_accuracy_with_type = {'Type': 'TEST ACCURACY'}
+    best_test_accuracy_with_type.update(best_test_accuracy)
+    best_test_loss_with_type = {'Type': 'TEST LOSS'}
+    best_test_loss_with_type.update(best_test_loss)
+    best_product_loss_with_type = {'Type': 'PROD LOSS'}
+    best_product_loss_with_type.update(best_product_loss)
     best_product_efficiency_with_type = {'Type': 'EFFICIENT PROD'}
     best_product_efficiency_with_type.update(best_product_efficiency)
-    best_validate_with_type = {'Type': 'VALIDATE ACCURACY'}
-    best_validate_with_type.update(best_validate)
-    best_train_with_type = {'Type': 'TRAIN ACCURACY'}
-    best_train_with_type.update(best_train)
 
-    pf = pd.DataFrame([best_test_with_type,
-                       best_product_with_type,
-                       best_product_efficiency_with_type,
-                       best_validate_with_type,
-                       best_train_with_type])
+    pf = pd.DataFrame([best_test_accuracy_with_type,
+                       best_test_loss_with_type,
+                       best_product_loss_with_type,
+                       best_product_efficiency_with_type])
     print(f'BEST RESULTS:')
     print(pf.to_string())
     pf.to_excel("output\\best.xlsx")
@@ -381,8 +371,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 # do_numerous_loops(1)
 # """
 do_numerous_loops(3, {'Validate loss improvement delta': 0.00001,
-                      'Validate loss improvement patience': 10,
-                      'Restore best weights': True,
+                      'Validate loss improvement patience': 5,
+                      'Restore best weights': False,
                       'Max num epochs': 1000,
                       'Batch size': 300,
                       'Num layers': 4,
