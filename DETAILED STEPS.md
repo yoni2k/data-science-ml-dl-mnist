@@ -352,3 +352,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Num epochs 20-26 - less than 23-26 of 100
 ### Conclusions going forward:
 - Seems makes test better while train/validate worse. Leave 200
+
+# Conclusions 26 - softmax 4 layers
+- Goal: double check that softmax doesn't help with 4 layers
+- Test Accuracy is some of the worst with softmax functions
+- However, that could be because our StopFunction is still too strict
+### Conclusions going forward:
+- Remove for now softmax, work on making the StopFunction better, then try again with softmax

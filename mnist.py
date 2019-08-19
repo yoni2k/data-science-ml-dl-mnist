@@ -24,6 +24,7 @@ Questions to ask:
 - How come even when seeding getting different results?
 - Different functions, when does each one make sense?
 - Test - how come gives different results every time
+- How to do it in the cloud - AWS AMI images don't have 2.0, containers also?
 """
 
 """ Imports """
@@ -45,34 +46,36 @@ FRACTION_VALIDATE = 0.1
 #   so decided to basically leave unlimited and rely on StopFunction only
 MAX_NUM_EPOCHS = 1000
 
-# accuracy_improvement_deltas = [0.0001]
-accuracy_improvement_deltas = [0.001, 0.0001]
+accuracy_improvement_deltas = [0.0001]
+# accuracy_improvement_deltas = [0.001, 0.0001]
 
-# accuracy_improvement_patiences = [3]
-accuracy_improvement_patiences = [3, 4]
+accuracy_improvement_patiences = [3]
+# accuracy_improvement_patiences = [3, 4]
 
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200], [400], [300]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
 # Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
-#batch_sizes = [300]
-batch_sizes = [200, 300, 400]
+batch_sizes = [300]
+# batch_sizes = [200, 300, 400]
 
 ## Tried before [10, 64], [50], [25, 50, 75], [500], [200]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
-# Later conclusion: 500 seems too much - worse results and
+# Later conclusion: 500 seems too much - worse results and slower
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
-hidden_widths = [100, 200, 300]
+#hidden_widths = [100, 200, 300]
+hidden_widths = [200]
 
 # Tried [3, 4, 5, 6], [5], [4]
 # Current conclusion - 4 layers seems enough, although with 5 layers get similar results (and sometimes takes longer)
 #nums_layers = [2, 3, 4, 5, 6, 10]
 nums_layers = [4]
 
-#functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-functions = ['relu', 'sigmoid', 'tanh']
+functions = ['sigmoid', 'tanh', 'relu', 'softmax']
+#functions = ['relu', 'sigmoid', 'tanh']
 #functions = ['relu']
 
-learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
+# learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
+learning_rates = [0.001]  # default in tf.keras.optimizers.Adam is 0.001
 
 
 def acquire_data():
