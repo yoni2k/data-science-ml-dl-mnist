@@ -435,3 +435,26 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Not include softmax in future tests, at least for 4 layers.  Sigmoid is probably not critical, so can leave just relu and tanh, but can definitely help in 5 layers
 - Run different parameters only with 'relu' and 'tanh' on 4 layers
+
+# Conclusions 37 - different functions for 5 layers (all 4 activation functions, with everything else set to best so far)
+- Activation functions:
+    - Softmax - doesn't seem to add much, usually worse, one time where it's good, usually having a different function is same or better
+    - Sigmoid - gives same or better, when taken with relu and tanh together 
+- Test accuracy
+    - Best - .9842 test accuracy - ('relu', 'relu', 'tanh') with test loss .0812
+    - A lot of the rest of top 10% are combinations of all 3 functions or 2/3, or even only relu
+- Test loss
+    - Best - .0715 test loss (with accuracy .9836) - ('tanh', 'tanh', 'sigmoid')
+- Loss * time
+    - A few of the best:
+        - 2 above - ('relu', 'relu', 'tanh') with 17.4, and ('tanh', 'tanh', 'sigmoid') with 16.9
+        - ('tanh', 'relu', 'tanh') one of the best in all categories - test accuracy 0.9833, test loss 0.08, loss * time = 16.9
+- Best 4 functions:
+    Hidden funcs	            Test Accuracy	Test Loss	Loss * Time
+    ('tanh', 'tanh', 'sigmoid')	0.9836  	    0.0715	    16.9334
+    ('tanh', 'relu', 'tanh')	0.9833  	    0.08	    16.9342
+    ('relu', 'tanh', 'sigmoid')	0.9833  	    0.0808	    18.627
+    ('relu', 'relu', 'tanh')	0.9842  	    0.0812	    17.4403
+### Conclusions going forward:
+- Play around with configuration  ('tanh', 'tanh', 'sigmoid'), perhaps with smaller learning rate, since seems train and validation loss were large, perhaps with smaller learning rate will do better
+- Invest in different parameters for main combinations of tanh and relu  
