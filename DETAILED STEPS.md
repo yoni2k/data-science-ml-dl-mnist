@@ -422,3 +422,16 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Validate and train accuracy - 1
 ### Conclusions going forward:
 - Accuracy is actually worse, so staying now with learning rate 0.001, but going forward to get better results, consider lowing learning rate from 0.001
+
+# Conclusions 36 - different functions for 4 layers (all 4 activation functions, with everything else set to best so far)
+- Activation functions
+    - Softmax function clearly doesn't add anything - all results with it are bad
+    - 1st sigmoid - not great results, although with not with softmax not much after other good ones
+    - 1st relu/tanh - best, without major difference  of what the function is (but not softmax)
+    - Absolutely best in every category: (not by much): ('relu', 'tanh'):
+        - test accuracy .9828
+        - test loss 0.0784
+        - time 200 on a very fast computer (like 380 on mine)
+### Conclusions going forward:
+- Not include softmax in future tests, at least for 4 layers.  Sigmoid is probably not critical, so can leave just relu and tanh, but can definitely help in 5 layers
+- Run different parameters only with 'relu' and 'tanh' on 4 layers
