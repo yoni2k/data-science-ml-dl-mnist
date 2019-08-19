@@ -47,10 +47,11 @@ MAX_NUM_EPOCHS = 1000
 
 # validate_loss_improve_deltas = [0.0001]
 # validate_loss_improve_deltas = [0.001, 0.0001]
-validate_loss_improve_deltas = [0.0001, 0.00001]
+# validate_loss_improve_deltas = [0.0001, 0.00001]
+validate_loss_improve_deltas = [0.0001]
 
-validate_loss_improve_patiences = [4, 5, 7]
-# validate_loss_improve_patiences = [3, 4]
+# validate_loss_improve_patiences = [4, 5, 7, 10]
+validate_loss_improve_patiences = [10]
 
 improve_restore_best_weights_values = [True]
 
@@ -72,12 +73,13 @@ hidden_widths = [200]
 #nums_layers = [2, 3, 4, 5, 6, 10]
 nums_layers = [4]
 
-# functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-#functions = ['relu', 'sigmoid', 'tanh']
-functions = ['relu','tanh']
+functions = ['sigmoid', 'tanh', 'relu', 'softmax']
+# functions = ['relu', 'sigmoid', 'tanh']
+# functions = ['relu','tanh']
 
 # learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
-learning_rates = [0.005, 0.001]  # default in tf.keras.optimizers.Adam is 0.001
+# learning_rates = [0.005, 0.001]  # default in tf.keras.optimizers.Adam is 0.001
+learning_rates = [0.001]  # default in tf.keras.optimizers.Adam is 0.001
 
 
 def acquire_data():
@@ -354,8 +356,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-# do_numerous_loops(1)
-
+do_numerous_loops(1)
+"""
 do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Validate loss improvement patience': 10,
                       'Restore best weights': True,
@@ -365,3 +367,4 @@ do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 200,
                       'Learning rate': 0.001})
+"""
