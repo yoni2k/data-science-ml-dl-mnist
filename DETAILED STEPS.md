@@ -372,8 +372,14 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Try with patience 5
 
-# Conclusions 29 - var_loss StopFuction with any var_loss, and with patience 5
+# Conclusions 29 - var_loss StopFunction with any var_loss, and with patience 5
 - Patience 5 seems much better, but having no limit on loss causes loss to decrease for a very long time, but then just up again, and that's the final result we get
 - Test function accuracye ~ .983
 ### Conclusions going forward:
 - Limit delta to 0.00001
+
+# Conclusions 30 - var_loss StopFunction with 0.00001, and with patience 5
+- 2/3 stopped too early
+- 1/3 stopped too late, when there was a jump to a bigger loss
+### Conclusions going forward:
+- Need more patience, but need to return to best result

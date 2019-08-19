@@ -53,6 +53,8 @@ validate_loss_improve_deltas = [0.00001]
 validate_loss_improve_patiences = [5]
 # validate_loss_improve_patiences = [3, 4]
 
+improve_restore_best_weights_values = [False, True]
+
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200], [400], [300]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
 # Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
@@ -164,7 +166,7 @@ def single_model(train_data, valid_inputs, valid_targets, test_data, in_dic):
     earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
                                                      min_delta=in_dic['Validate loss improvement delta'],
                                                      patience=in_dic['Validate loss improvement patience'],
-                                                     restore_best_weights=False)
+                                                     restore_best_weights=in_dic['Restore best weights'])
     start = timer()
     history = model.fit(train_data, epochs=in_dic['Max num epochs'], callbacks=[earlyCallback],
                         validation_data=(valid_inputs, valid_targets), verbose=2)
@@ -197,6 +199,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         in_dic = given_dic
         local_validate_loss_improve_deltas = [in_dic['Validate loss improvement delta']]
         local_validate_loss_improve_patiences = [in_dic['Validate loss improvement patience']]
+        local_improve_restore_best_weights_values = [in_dic['Restore best weights']]
         local_batch_sizes = [in_dic['Batch size']]
         local_hidden_widths = [in_dic['Hidden width']]
         local_nums_layers = [in_dic['Num layers']]
@@ -207,6 +210,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
                   'Shuffle seed': 100}
         local_validate_loss_improve_deltas = validate_loss_improve_deltas
         local_validate_loss_improve_patiences = validate_loss_improve_patiences
+        local_improve_restore_best_weights_values = improve_restore_best_weights_values
         local_batch_sizes = batch_sizes
         local_hidden_widths = hidden_widths
         local_nums_layers = nums_layers
@@ -216,6 +220,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     num_regressions_without_functions = num_loops * \
                                         len(local_validate_loss_improve_deltas) * \
                                         len(local_validate_loss_improve_patiences) * \
+                                        len(local_improve_restore_best_weights_values) * \
                                         len(local_batch_sizes) * \
                                         len(local_hidden_widths) * \
                                         len(local_nums_layers) * \
@@ -250,75 +255,77 @@ def do_numerous_loops(num_loops=1, given_dic=None):
             in_dic['Validate loss improvement delta'] = validate_loss_improve_delta
             for validate_loss_improve_patience in local_validate_loss_improve_patiences:
                 in_dic['Validate loss improvement patience'] = validate_loss_improve_patience
-                for num_layers in local_nums_layers:
-                    in_dic['Num layers'] = num_layers
-                    if not given_dic:
-                        funcs_product = itertools.product(local_functions, repeat=(num_layers - 2))
-                    else:
-                        funcs_product = [in_dic['Hidden funcs']]
-                    print(f'funcs_product: {funcs_product}')
-                    for hidden_funcs in funcs_product:
-                        in_dic['Hidden funcs'] = hidden_funcs
-                        for hidden_width in local_hidden_widths:
-                            in_dic['Hidden width'] = hidden_width
-                            for learning_rate in local_learning_rates:
-                                in_dic['Learning rate'] = learning_rate
-                                num_model_trainings += 1
-                                accum_test = 0
-                                accum_product = 0
-                                accum_product_efficiency = 0
-                                accum_validate = 0
-                                accum_train = 0
-                                for loop in range(1, num_loops+1):
-                                    if num_loops > 1:
-                                        # if more than 1 loops, to allow for different seed, need to prepare data every time
-                                        in_dic['Shuffle seed'] = loop
-                                        train_data, valid_inputs, valid_targets, test_data = prepare_data(mnist_data,
-                                                                                                          num_train_valid_examples,
-                                                                                                          num_test_examples,
-                                                                                                          batch_size,
-                                                                                                          in_dic['Shuffle seed'])
+                for improve_restore_best_weights in local_improve_restore_best_weights_values:
+                    in_dic['Restore best weights'] = improve_restore_best_weights
+                    for num_layers in local_nums_layers:
+                        in_dic['Num layers'] = num_layers
+                        if not given_dic:
+                            funcs_product = itertools.product(local_functions, repeat=(num_layers - 2))
+                        else:
+                            funcs_product = [in_dic['Hidden funcs']]
+                        print(f'funcs_product: {funcs_product}')
+                        for hidden_funcs in funcs_product:
+                            in_dic['Hidden funcs'] = hidden_funcs
+                            for hidden_width in local_hidden_widths:
+                                in_dic['Hidden width'] = hidden_width
+                                for learning_rate in local_learning_rates:
+                                    in_dic['Learning rate'] = learning_rate
+                                    num_model_trainings += 1
+                                    accum_test = 0
+                                    accum_product = 0
+                                    accum_product_efficiency = 0
+                                    accum_validate = 0
+                                    accum_train = 0
+                                    for loop in range(1, num_loops+1):
+                                        if num_loops > 1:
+                                            # if more than 1 loops, to allow for different seed, need to prepare data every time
+                                            in_dic['Shuffle seed'] = loop
+                                            train_data, valid_inputs, valid_targets, test_data = prepare_data(mnist_data,
+                                                                                                              num_train_valid_examples,
+                                                                                                              num_test_examples,
+                                                                                                              batch_size,
+                                                                                                              in_dic['Shuffle seed'])
 
-                                    time_running_sec = timer() - time_run_started
-                                    print(f'Model {num_model_trainings}, loop {loop}/{num_loops}, '
-                                          f'total time min: {round(time_running_sec / 60, 1)}, '
-                                          f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
-                                          f'seconds per model: {round(time_running_sec / num_model_trainings)} '
-                                          f'====================================')
-                                    out_dic = single_model(train_data, valid_inputs, valid_targets, test_data, in_dic)
-                                    result = in_dic.copy()
-                                    result.update(out_dic)
-                                    results.append(result)
-                                    print(f'\nCURRENT: {result}')
+                                        time_running_sec = timer() - time_run_started
+                                        print(f'Model {num_model_trainings}, loop {loop}/{num_loops}, '
+                                              f'total time min: {round(time_running_sec / 60, 1)}, '
+                                              f'total time hours: {round(time_running_sec / 60 / 60, 2)}: '
+                                              f'seconds per model: {round(time_running_sec / num_model_trainings)} '
+                                              f'====================================')
+                                        out_dic = single_model(train_data, valid_inputs, valid_targets, test_data, in_dic)
+                                        result = in_dic.copy()
+                                        result.update(out_dic)
+                                        results.append(result)
+                                        print(f'\nCURRENT: {result}')
 
-                                    accum_test += result['Test Accuracy']
-                                    accum_product += result['Product Accuracy']
-                                    accum_product_efficiency += result['Product / Time']
-                                    accum_validate += result['Validate Accuracy']
-                                    accum_train += result['Train Accuracy']
+                                        accum_test += result['Test Accuracy']
+                                        accum_product += result['Product Accuracy']
+                                        accum_product_efficiency += result['Product / Time']
+                                        accum_validate += result['Validate Accuracy']
+                                        accum_train += result['Train Accuracy']
 
-                                if (accum_test / num_loops) > best_test['Test Accuracy']:
-                                    best_test = {'Average loop result': round(accum_test / num_loops, 4)}
-                                    best_test.update(result)
-                                if (accum_product / num_loops) > best_product['Product Accuracy']:
-                                    best_product = {'Average loop result': round(accum_product / num_loops, 4)}
-                                    best_product.update(result)
-                                if (accum_product_efficiency / num_loops) > best_product_efficiency['Product / Time']:
-                                    best_product_efficiency = {'Average loop result': round(accum_product_efficiency / num_loops, 4)}
-                                    best_product_efficiency.update(result)
-                                if (accum_validate / num_loops) > best_validate['Validate Accuracy']:
-                                    best_validate = {'Average loop result': round(accum_validate / num_loops, 4)}
-                                    best_validate.update(result)
-                                if (accum_train / num_loops) > best_train['Train Accuracy']:
-                                    best_train = {'Average loop result': round(accum_train / num_loops)}
-                                    best_train.update(result)
+                                    if (accum_test / num_loops) > best_test['Test Accuracy']:
+                                        best_test = {'Average loop result': round(accum_test / num_loops, 4)}
+                                        best_test.update(result)
+                                    if (accum_product / num_loops) > best_product['Product Accuracy']:
+                                        best_product = {'Average loop result': round(accum_product / num_loops, 4)}
+                                        best_product.update(result)
+                                    if (accum_product_efficiency / num_loops) > best_product_efficiency['Product / Time']:
+                                        best_product_efficiency = {'Average loop result': round(accum_product_efficiency / num_loops, 4)}
+                                        best_product_efficiency.update(result)
+                                    if (accum_validate / num_loops) > best_validate['Validate Accuracy']:
+                                        best_validate = {'Average loop result': round(accum_validate / num_loops, 4)}
+                                        best_validate.update(result)
+                                    if (accum_train / num_loops) > best_train['Train Accuracy']:
+                                        best_train = {'Average loop result': round(accum_train / num_loops)}
+                                        best_train.update(result)
 
-                                print("Finished all loops +++++++++++++++++++++++++++++++++++++++++++++")
-                                print(f'BEST TEST ACCURACY:     {best_test}')
-                                print(f'BEST PRODUCT ACCURACY:  {best_product}')
-                                print(f'BEST EFFICIENT PRODUCT: {best_product_efficiency}')
-                                print(f'BEST VALIDATE ACCURACY: {best_validate}')
-                                print(f'BEST TRAIN ACCURACY:    {best_train}')
+                                    print("Finished all loops +++++++++++++++++++++++++++++++++++++++++++++")
+                                    print(f'BEST TEST ACCURACY:     {best_test}')
+                                    print(f'BEST PRODUCT ACCURACY:  {best_product}')
+                                    print(f'BEST EFFICIENT PRODUCT: {best_product_efficiency}')
+                                    print(f'BEST VALIDATE ACCURACY: {best_validate}')
+                                    print(f'BEST TRAIN ACCURACY:    {best_train}')
 
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++')
     print(f'Total number of models trained: {num_model_trainings} with {num_loops} loops per model')
@@ -342,7 +349,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         'Functions': local_functions,
         'Learning rates': local_learning_rates,
         'Improvement deltas': local_validate_loss_improve_deltas,
-        'Improvement patience': local_validate_loss_improve_patiences}
+        'Improvement patience': local_validate_loss_improve_patiences,
+        'Improvement restore weights': local_improve_restore_best_weights_values}
 
     pf = pd.DataFrame([hyperparams])
     print(f'HYPERPARAMS:')
@@ -373,7 +381,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 # do_numerous_loops(1)
 # """
 do_numerous_loops(3, {'Validate loss improvement delta': 0.00001,
-                      'Validate loss improvement patience': 5,
+                      'Validate loss improvement patience': 10,
+                      'Restore best weights': True,
                       'Max num epochs': 1000,
                       'Batch size': 300,
                       'Num layers': 4,
