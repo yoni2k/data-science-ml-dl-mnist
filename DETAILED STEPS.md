@@ -366,3 +366,8 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Start using val_loss as the stop function.  Need to play with patience.  Does it depend also on how fast we are learning? For example smaller batch size or larger learning rate = need to wait less to stop
 - Try with var_loss that's any, and with patience 3
+
+# Conclusions 28 - var_loss StopFuction with any var_loss, and with patience 3
+- Patience 3 is too small - stopping too early
+### Conclusions going forward:
+- Try with patience 5

@@ -46,11 +46,13 @@ FRACTION_VALIDATE = 0.1
 #   so decided to basically leave unlimited and rely on StopFunction only
 MAX_NUM_EPOCHS = 1000
 
-accuracy_improvement_deltas = [0.0001]
+# TODO - remove altogether improvement delta? If leaving, need to change the value from accuracy to validate_loss or something
+# accuracy_improvement_deltas = [0.0001]
 # accuracy_improvement_deltas = [0.001, 0.0001]
+accuracy_improvement_deltas = [0.000000001]  # just to have some value for now
 
-accuracy_improvement_patiences = [3]
-# accuracy_improvement_patiences = [3, 4]
+validate_loss_improve_patiences = [5]
+# validate_loss_improve_patiences = [3, 4]
 
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200], [400], [300]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
@@ -160,14 +162,9 @@ def single_model(train_data, valid_inputs, valid_targets, test_data, in_dic):
 
     model = prepare_model(in_dic)
 
-    """
-    earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
-                                                     min_delta=in_dic['Accuracy improvement delta'],
-                                                     patience=in_dic['Accuracy improvement patience'],
-                                                     restore_best_weights=False)
-    """
     earlyCallback = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
-                                                     patience=3,
+                                                     min_delta=in_dic['Accuracy improvement delta'],
+                                                     patience=in_dic['Validate loss improvement patience'],
                                                      restore_best_weights=False)
     start = timer()
     history = model.fit(train_data, epochs=in_dic['Max num epochs'], callbacks=[earlyCallback],
@@ -200,7 +197,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     if given_dic:
         in_dic = given_dic
         local_accuracy_improvement_deltas = [in_dic['Accuracy improvement delta']]
-        local_accuracy_improvement_patiences = [in_dic['Accuracy improvement patience']]
+        local_validate_loss_improve_patiences = [in_dic['Validate loss improvement patience']]
         local_batch_sizes = [in_dic['Batch size']]
         local_hidden_widths = [in_dic['Hidden width']]
         local_nums_layers = [in_dic['Num layers']]
@@ -210,7 +207,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         in_dic = {'Max num epochs': MAX_NUM_EPOCHS,
                   'Shuffle seed': 100}
         local_accuracy_improvement_deltas = accuracy_improvement_deltas
-        local_accuracy_improvement_patiences = accuracy_improvement_patiences
+        local_validate_loss_improve_patiences = validate_loss_improve_patiences
         local_batch_sizes = batch_sizes
         local_hidden_widths = hidden_widths
         local_nums_layers = nums_layers
@@ -219,7 +216,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
     num_regressions_without_functions = num_loops * \
                                         len(local_accuracy_improvement_deltas) * \
-                                        len(local_accuracy_improvement_patiences) * \
+                                        len(local_validate_loss_improve_patiences) * \
                                         len(local_batch_sizes) * \
                                         len(local_hidden_widths) * \
                                         len(local_nums_layers) * \
@@ -252,8 +249,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
         for accuracy_improvement_delta in local_accuracy_improvement_deltas:
             in_dic['Accuracy improvement delta'] = accuracy_improvement_delta
-            for accuracy_improvement_patience in local_accuracy_improvement_patiences:
-                in_dic['Accuracy improvement patience'] = accuracy_improvement_patience
+            for validate_loss_improve_patience in local_validate_loss_improve_patiences:
+                in_dic['Validate loss improvement patience'] = validate_loss_improve_patience
                 for num_layers in local_nums_layers:
                     in_dic['Num layers'] = num_layers
                     if not given_dic:
@@ -346,7 +343,7 @@ def do_numerous_loops(num_loops=1, given_dic=None):
         'Functions': local_functions,
         'Learning rates': local_learning_rates,
         'Improvement deltas': local_accuracy_improvement_deltas,
-        'Improvement delta': local_accuracy_improvement_patiences}
+        'Improvement patience': local_validate_loss_improve_patiences}
 
     pf = pd.DataFrame([hyperparams])
     print(f'HYPERPARAMS:')
@@ -376,8 +373,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
 
 # do_numerous_loops(1)
 # """
-do_numerous_loops(3, {'Accuracy improvement delta': 0.00001,
-                      'Accuracy improvement patience': 10,
+do_numerous_loops(3, {'Accuracy improvement delta': 0.000000001,  # just to have some value for now
+                      'Validate loss improvement patience': 5,
                       'Max num epochs': 1000,
                       'Batch size': 300,
                       'Num layers': 4,
