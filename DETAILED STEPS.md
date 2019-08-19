@@ -410,3 +410,8 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Train loss - average .0005
 ### Conclusions going forward:
 - Staying with this configuration for now (var loss delta 0.0001 and patience 10)
+
+# Conclusions 34 - learning rate higher 0.005 instead of default 0.001
+- Much worse - not getting close to best result
+### Conclusions going forward:
+- Try with 0.0001

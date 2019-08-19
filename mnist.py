@@ -356,8 +356,8 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-do_numerous_loops(1)
-"""
+# do_numerous_loops(1)
+
 do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Validate loss improvement patience': 10,
                       'Restore best weights': True,
@@ -366,5 +366,4 @@ do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Num layers': 4,
                       'Hidden funcs': ('tanh', 'relu'),
                       'Hidden width': 200,
-                      'Learning rate': 0.001})
-"""
+                      'Learning rate': 0.0001})
