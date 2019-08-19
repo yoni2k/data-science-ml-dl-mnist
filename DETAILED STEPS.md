@@ -415,3 +415,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Much worse - not getting close to best result
 ### Conclusions going forward:
 - Try with 0.0001
+
+# Conclusions 35 - learning rate lower 0.0001 instead of default 0.001
+- Test accuracy .9802 consistenly
+- Train time 1516 - much higher
+- Validate and train accuracy - 1
+### Conclusions going forward:
+- Accuracy is actually worse, so staying now with learning rate 0.001, but going forward to get better results, consider lowing learning rate from 0.001
