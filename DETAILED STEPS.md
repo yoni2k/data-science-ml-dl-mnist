@@ -401,3 +401,12 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Validate and train accuracies - .995 and above - worse, not 1 as we got with 10 and 0.00001
 ### Conclusions going forward:
 - Try 10 patience, but delta 0.0001 and not 0.00001
+
+# Conclusions 33 - var_loss 0.0001, patience 10, return to best results
+- Test accuracy .982 consistenly - similar to others before
+- Train time - average 390 - saving 50 seconds from var_loss 0.00001
+- Validate and train accuracies - mostly 1 (besides one case of .999)
+- Validate loss - average .0002
+- Train loss - average .0005
+### Conclusions going forward:
+- Staying with this configuration for now (var loss delta 0.0001 and patience 10)
