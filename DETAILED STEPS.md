@@ -512,4 +512,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Wait for results of 4 layers with higher width than 300
 - Wait for results of 5 layers with different parameters
 
+# Conclusions 43 - 5 layer - (tanh, relu, relu) widths and batches  200, 200
+- Goal: Saw that it's one of the best options in 5 layers, so tried it locally
+- Test accuracy: .982-.983 - not as good as what I have with 4 layers
+### Conclusions going forward:
+- So far the option with 4 layers is best
+
 
