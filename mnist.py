@@ -58,15 +58,16 @@ improve_restore_best_weights_values = [True]
 # Tried before [100, 1000], [500], [50, 100, 250, 500], [50, 75, 100, 170, 250], [100, 150, 200], [400], [300]
 # Current conclusion - 100 seems the best, but 50-250 all give good results, 200 seems as good as lower. Possibly higher also OK, but takes more time when climing up
 # Conclusion later - 400 seems slightly faster and slightly more accurate than 200, so leaving with 300 for now
-batch_sizes = [200, 300, 400]
 # batch_sizes = [200, 300, 400]
+batch_sizes = [400, 450, 500]
 
 ## Tried before [10, 64], [50], [25, 50, 75], [500], [200]
 # Current conclusion - 75 gives the best results from [25, 50, 75], need to try heigher also
 # Later conclusion: 500 seems too much - worse results and slower
 #hidden_widths = [1, 2, 4, 8, 16, 32, 64, 128, 256]
 #hidden_widths = [100, 200, 300]
-hidden_widths = [200, 300]
+# hidden_widths = [200, 300]
+hidden_widths = [400, 450, 500]
 
 # Tried [3, 4, 5, 6], [5], [4]
 # Current conclusion - 4 layers seems enough, although with 5 layers get similar results (and sometimes takes longer)
@@ -74,8 +75,9 @@ hidden_widths = [200, 300]
 nums_layers = [4]
 
 # functions = ['sigmoid', 'tanh', 'relu', 'softmax']
-functions = ['relu', 'sigmoid', 'tanh']
+# functions = ['relu', 'sigmoid', 'tanh']
 # functions = ['relu','tanh']
+functions = ['relu']
 
 # learning_rates = [0.0005, 0.001, 0.005]  # default in tf.keras.optimizers.Adam is 0.001
 # learning_rates = [0.005, 0.001]  # default in tf.keras.optimizers.Adam is 0.001
@@ -356,15 +358,50 @@ def do_numerous_loops(num_loops=1, given_dic=None):
     pf.to_excel("output\\best.xlsx")
 
 
-do_numerous_loops(1)
+# do_numerous_loops(1)
+# """
+# Best 4 layers
+do_numerous_loops(5, {'Validate loss improvement delta': 0.0001,
+                      'Validate loss improvement patience': 10,
+                      'Restore best weights': True,
+                      'Max num epochs': 1000,
+                      'Batch size': 450,  # 200
+                      'Num layers': 4,
+                      'Hidden funcs': ('relu', 'relu'),
+                      'Hidden width': 450,  # 200
+                      'Learning rate': 0.001})
+# """
+"""
+# 2nd best 4 layers
+do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
+                      'Validate loss improvement patience': 10,
+                      'Restore best weights': True,
+                      'Max num epochs': 1000,
+                      'Batch size': 200,
+                      'Num layers': 4,
+                      'Hidden funcs': ('tanh', 'relu'),
+                      'Hidden width': 200,
+                      'Learning rate': 0.001})
+# """
 """
 do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
                       'Validate loss improvement patience': 10,
                       'Restore best weights': True,
                       'Max num epochs': 1000,
                       'Batch size': 300,
-                      'Num layers': 4,
-                      'Hidden funcs': ('tanh', 'relu'),
-                      'Hidden width': 200,
-                      'Learning rate': 0.0001})
+                      'Num layers': 5,
+                      'Hidden funcs': ('tanh', 'relu', 'relu'),  
+                      'Hidden width': 300,
+                      'Learning rate': 0.001})
+"""
+"""
+do_numerous_loops(3, {'Validate loss improvement delta': 0.0001,
+                      'Validate loss improvement patience': 10,
+                      'Restore best weights': True,
+                      'Max num epochs': 1000,
+                      'Batch size': 300,
+                      'Num layers': 5,
+                      'Hidden funcs': ('relu', 'tanh', 'sigmoid'),
+                      'Hidden width': 300,
+                      'Learning rate': 0.001})
 """
