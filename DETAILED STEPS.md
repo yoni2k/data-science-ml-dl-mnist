@@ -512,10 +512,25 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Wait for results of 4 layers with higher width than 300
 - Wait for results of 5 layers with different parameters
 
-# Conclusions 43 - 5 layer - (tanh, relu, relu) widths and batches  200, 200
+# Conclusions 43 - 5 layer - (tanh, relu, relu) widths and batches  300, 300
 - Goal: Saw that it's one of the best options in 5 layers, so tried it locally
 - Test accuracy: .982-.983 - not as good as what I have with 4 layers
 ### Conclusions going forward:
 - So far the option with 4 layers is best
+
+# Conclusions 44 - 4 layers - different func, and batches (200,300,400), but higher width 400
+- relu relu slightly better with width 400 and batch 400 (.985 test accuracy)
+### Conclusions going forward:
+- Up relu relu width and batch to 400, try higher on both
+
+# Conclusions 45 - 5 layers - different func, and batches (200,300,400), and widths (200, 300)
+- Best test accuracy - top 5%
+    - Batch sizes vary 
+    - Widths - mostly 300, the ones with 200, usually 300 is similar
+    - Best: 300	('tanh', 'relu', 'relu')	300 with test accuracy of 0.9862 on AWS, however locally got only .982/.983
+    - 2nd best: 300	('relu', 'tanh', 'sigmoid')	300	accuracy 0.9857 
+### Conclusions going forward:
+- Consider width > 300
+- Consider 2nd best above
 
 
