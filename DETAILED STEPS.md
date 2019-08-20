@@ -504,3 +504,12 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Try around following values (accuracy .9847): 
   Batch size	Hidden funcs	    Hidden width
   200	        ('relu', 'relu')	200
+
+# Conclusions 42 - 4 layer - 'relu', 'relu' widths and batches around 200, 200
+- relu relu with 200 200 is the best option - test accuracy 0.9840 (rest are a bit less)
+### Conclusions going forward:
+- So far for 4 layers relu relu with 200 200 is the best option (accuracy .9840)
+- Wait for results of 4 layers with higher width than 300
+- Wait for results of 5 layers with different parameters
+
+
