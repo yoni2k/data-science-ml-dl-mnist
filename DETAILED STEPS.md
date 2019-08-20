@@ -533,4 +533,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Consider width > 300
 - Consider 2nd best above
 
+# Conclusions 46 - 5 layers - ('relu', 'tanh', 'sigmoid') with 300,300 batch and width
+- 3 tries gave very different results of test accuracy - .9823 - .9854
+### Conclusions going forward:
+- Can't consistently use this over 4 layers that gives more consistently .984
+
+
 
