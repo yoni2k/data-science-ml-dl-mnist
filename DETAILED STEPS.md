@@ -463,3 +463,19 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Test accuracy - around .981 - not as good as 0.001
 ### Conclusions going forward:
 - Stay with learning rate of 0.001
+
+# Conclusions 39 - 5 layer - 'tanh', 'tanh', 'sigmoid' with a lot of patience and delta 0.00001 instead of 0.0001
+- Test accuracy consistently 0.983
+- Test loss 0.095 on average
+- Train time 680 on average
+### Conclusions going forward:
+- Giving even more patience doesn't necessarily help - got .9836 in previous results
+- Compare to doing the same with 4 layer 'tanh', 'relu'
+
+# Conclusions 40 - 4 layer - 'tanh', 'relu', 'sigmoid' with a lot of patience and delta 0.00001 instead of 0.0001
+- Test accuracy consistently 0.982
+- Test loss 0.096 on average
+- Train time 710 on average
+### Conclusions going forward:
+- Giving even more patience doesn't necessarily help - got same in previous results
+- With given parameters this is the best option for 4 layers
