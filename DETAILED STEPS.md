@@ -479,3 +479,28 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Giving even more patience doesn't necessarily help - got same in previous results
 - With given parameters this is the best option for 4 layers
+
+# Conclusions 41 - 4 layers with different batch sizes, hidden widths and activation functions
+- Test accuracy:
+    - Best 0.9847 Batch size	Hidden funcs	    Hidden width
+                    200	        ('relu', 'relu')	200
+    - Top 10% - relu always first
+    - Top 10% - Batch sizes vary
+    - Top 10% - Hidden width - 300 almost everywhere
+    - Top 10%:
+        Batch size	Hidden funcs	Hidden width	Test Accuracy
+        200	        ('relu', 'relu')	200	        0.9847
+        200	        ('relu', 'relu')	300	        0.9843
+        200	        ('relu', 'sigmoid')	300	        0.9841
+        300	        ('relu', 'sigmoid')	300	        0.9839
+        400	        ('relu', 'tanh')	300	        0.9839
+- Test loss
+    - Best: 0.0708 (average of best accuracies is .08)
+        Batch size	Hidden funcs	    Hidden width	Test Accuracy	Test Loss
+        300	        ('tanh', 'tanh')	300	            0.9831          0.0708
+    - Batch size and hidden width vary
+### Conclusions going forward:
+- Try higher hidden width than 300
+- Try around following values (accuracy .9847): 
+  Batch size	Hidden funcs	    Hidden width
+  200	        ('relu', 'relu')	200
