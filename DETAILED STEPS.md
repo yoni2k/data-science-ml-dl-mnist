@@ -558,3 +558,11 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Both 450 seems the best - test accuracy .9848. Both some are good with 400, 450, 500.  So staying in the middle  
 ### Conclusions going forward:
 - Change batch and width to 450
+
+# Conclusions 50 - 4 layers - ('tanh', 'relu') with batch and widths 200
+- Local test (not in AWS)
+- Goal: compare to relu relu local
+- Accuracy - on average .983 (.982-.984)
+### Conclusions going forward:
+- relu relu seems better
+
