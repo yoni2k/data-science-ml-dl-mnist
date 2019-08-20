@@ -539,4 +539,10 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 - Can't consistently use this over 4 layers that gives more consistently .984
 
 
+# Conclusions 47 - 4 layers - ('relu', 'relu') with batch [350,400,450] and widths [350,400,450]
+- Best test accuracy: 400 batch, 450 width: test accuracy 0.9848
+- 2nd best: 350 batch, 400 width: test accuracy 0.9845
+- 3rd best: 450 batch, 450 width
+### Conclusions going forward:
+- Try batch 400, 450 with width 500
 
