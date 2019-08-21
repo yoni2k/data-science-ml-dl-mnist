@@ -566,3 +566,33 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - relu relu seems better
 
+# Conclusions 51 - 5 layers - width 400, different activation functions and batches (200,300,400)
+- AWS run
+- Top 5%:
+    Hidden width	Batch size	Hidden funcs	            Test Accuracy
+    400	            200	        ('relu', 'tanh', 'sigmoid')	0.9852
+    400	            300	        ('relu', 'relu', 'relu')	0.9851
+    400	            300	        ('tanh', 'relu', 'sigmoid')	0.9856
+    400	            400	        ('tanh', 'relu', 'tanh')	0.9859
+- Best: 400	            400	        ('tanh', 'relu', 'tanh')	0.9859, see next run locally
+- Second - ('tanh', 'relu', 'sigmoid') that was tried and didn't give consistent better results locally
+- sigmoid as 3rd with relu,tanh or tanh,relu gives great results, but doesn't seem extremely consistent
+### Conclusions going forward:
+- Test locally the best run, compare to 4 layers best solution
+
+# Conclusions 52 - 5 layers - (tanh, relu, tanh), batch, width 450, 450
+- Local run
+- Average test accuracy of .985, somewhat consistent. Possibly slightly better by .001 than 4 layer solution.
+- Time: 410 local
+- Test loss average: 0.675  
+### Conclusions going forward:
+- Not worth going to a 5 layer slower less stable solution for .001. Staying with 4 layers 
+
+# Conclusions 53 - 4 layers ('relu', 'relu'), batch, width 450, 450
+- Local run
+- Goal compare to 5 layers above 
+- Average test accuracy: .9835 (.983-.984)
+- Time: 345 local
+- Test loss: 0.08
+### Conclusions going forward:
+- 5 layers model above seems to be slightly better, slower and less consistent.  Staying with 4 layers.
