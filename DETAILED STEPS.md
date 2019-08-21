@@ -597,7 +597,7 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - 5 layers model above seems to be slightly better, slower and less consistent.  Staying with 4 layers.
 
-# Conclusions 53 - 4 layers ('relu', 'relu'), batch 450, width 784 (number of inputs)
+# Conclusions 54 - 4 layers ('relu', 'relu'), batch 450, width 784 (number of inputs)
 - Local run
 - Goal - try to have width at least as number of inputs (actually exactly in this case) 
 - Average test accuracy: .9843 (.983-.984)
@@ -606,3 +606,11 @@ Default in tf.keras.optimizers.Adam is 0.001, tried with 0.0001
 ### Conclusions going forward:
 - Doesn't seem to improve by much from 450 width to 784.  Leave 450, but as an option for running different options, leave in
 
+# Conclusions 55 - 5 layers (tanh, relu, tanh), batch 450, width 784 (number of inputs)
+- Local run
+- Goal - try to have width at least as number of inputs (actually exactly in this case) 
+- Average test accuracy: .982 - worse than 450
+- Time: 450 average local
+- Test loss: 0.08
+### Conclusions going forward:
+- Doesn't seem to improve by much from 450 width to 784.  Leave 450, but as an option for running different options, leave in
